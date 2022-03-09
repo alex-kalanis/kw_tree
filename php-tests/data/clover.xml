@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1646889350">
+  <project timestamp="1646889350">
+    <package name="kalanis\kw_tree\Adapters">
+      <file name="/usr/share/nginx/html/kw_tree/php-src/Adapters/ArrayAdapter.php">
+        <class name="kalanis\kw_tree\Adapters\ArrayAdapter" namespace="kalanis\kw_tree\Adapters" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="3" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="20" coveredstatements="20" elements="22" coveredelements="22"/>
+        </class>
+        <line num="16" type="method" name="pack" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="19" type="stmt" count="1"/>
+        <line num="20" type="stmt" count="1"/>
+        <line num="21" type="stmt" count="1"/>
+        <line num="22" type="stmt" count="1"/>
+        <line num="23" type="stmt" count="1"/>
+        <line num="24" type="stmt" count="1"/>
+        <line num="25" type="stmt" count="1"/>
+        <line num="26" type="stmt" count="1"/>
+        <line num="30" type="method" name="unpack" visibility="public" complexity="2" crap="2" count="1"/>
+        <line num="32" type="stmt" count="1"/>
+        <line num="33" type="stmt" count="1"/>
+        <line num="34" type="stmt" count="1"/>
+        <line num="35" type="stmt" count="1"/>
+        <line num="36" type="stmt" count="1"/>
+        <line num="37" type="stmt" count="1"/>
+        <line num="38" type="stmt" count="1"/>
+        <line num="39" type="stmt" count="1"/>
+        <line num="40" type="stmt" count="1"/>
+        <line num="42" type="stmt" count="1"/>
+        <line num="43" type="stmt" count="1"/>
+        <line num="45" type="stmt" count="1"/>
+        <metrics loc="47" ncloc="42" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="20" coveredstatements="20" elements="22" coveredelements="22"/>
+      </file>
+      <file name="/usr/share/nginx/html/kw_tree/php-src/Adapters/NodeAdapter.php">
+        <class name="kalanis\kw_tree\Adapters\NodeAdapter" namespace="kalanis\kw_tree\Adapters" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="9" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="27" coveredstatements="27" elements="30" coveredelements="30"/>
+        </class>
+        <line num="24" type="method" name="cutDir" visibility="public" complexity="2" crap="2" count="5"/>
+        <line num="26" type="stmt" count="5"/>
+        <line num="27" type="stmt" count="5"/>
+        <line num="28" type="stmt" count="5"/>
+        <line num="30" type="stmt" count="5"/>
+        <line num="33" type="method" name="process" visibility="public" complexity="5" crap="5" count="5"/>
+        <line num="35" type="stmt" count="5"/>
+        <line num="36" type="stmt" count="5"/>
+        <line num="37" type="stmt" count="5"/>
+        <line num="38" type="stmt" count="5"/>
+        <line num="39" type="stmt" count="2"/>
+        <line num="40" type="stmt" count="2"/>
+        <line num="41" type="stmt" count="2"/>
+        <line num="42" type="stmt" count="2"/>
+        <line num="44" type="stmt" count="2"/>
+        <line num="45" type="stmt" count="2"/>
+        <line num="46" type="stmt" count="2"/>
+        <line num="47" type="stmt" count="2"/>
+        <line num="50" type="stmt" count="4"/>
+        <line num="51" type="stmt" count="4"/>
+        <line num="52" type="stmt" count="4"/>
+        <line num="54" type="stmt" count="4"/>
+        <line num="55" type="stmt" count="4"/>
+        <line num="56" type="stmt" count="4"/>
+        <line num="57" type="stmt" count="4"/>
+        <line num="60" type="stmt" count="5"/>
+        <line num="63" type="method" name="cutPath" visibility="protected" complexity="2" crap="2" count="5"/>
+        <line num="65" type="stmt" count="5"/>
+        <line num="66" type="stmt" count="5"/>
+        <line num="67" type="stmt" count="5"/>
+        <metrics loc="70" ncloc="62" classes="1" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="27" coveredstatements="27" elements="30" coveredelements="30"/>
+      </file>
+    </package>
+    <package name="kalanis\kw_tree">
+      <file name="/usr/share/nginx/html/kw_tree/php-src/FileNode.php">
+        <class name="kalanis\kw_tree\FileNode" namespace="kalanis\kw_tree" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="13" methods="13" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="21" coveredstatements="21" elements="34" coveredelements="34"/>
+        </class>
+        <line num="27" type="method" name="setData" visibility="public" complexity="1" crap="1" count="10"/>
+        <line num="29" type="stmt" count="10"/>
+        <line num="30" type="stmt" count="10"/>
+        <line num="31" type="stmt" count="10"/>
+        <line num="32" type="stmt" count="10"/>
+        <line num="33" type="stmt" count="10"/>
+        <line num="34" type="stmt" count="10"/>
+        <line num="35" type="stmt" count="10"/>
+        <line num="36" type="stmt" count="10"/>
+        <line num="39" type="method" name="addSubNode" visibility="public" complexity="1" crap="1" count="3"/>
+        <line num="41" type="stmt" count="3"/>
+        <line num="42" type="stmt" count="3"/>
+        <line num="48" type="method" name="getSubNodes" visibility="public" complexity="1" crap="1" count="3"/>
+        <line num="50" type="stmt" count="3"/>
+        <line num="53" type="method" name="getPath" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="55" type="stmt" count="5"/>
+        <line num="58" type="method" name="getName" visibility="public" complexity="1" crap="1" count="10"/>
+        <line num="60" type="stmt" count="10"/>
+        <line num="63" type="method" name="getDir" visibility="public" complexity="1" crap="1" count="9"/>
+        <line num="65" type="stmt" count="9"/>
+        <line num="68" type="method" name="getSize" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="70" type="stmt" count="5"/>
+        <line num="73" type="method" name="getType" visibility="public" complexity="1" crap="1" count="9"/>
+        <line num="75" type="stmt" count="9"/>
+        <line num="78" type="method" name="isWritable" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="80" type="stmt" count="5"/>
+        <line num="83" type="method" name="isReadable" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="85" type="stmt" count="5"/>
+        <line num="88" type="method" name="isFile" visibility="public" complexity="1" crap="1" count="7"/>
+        <line num="90" type="stmt" count="7"/>
+        <line num="93" type="method" name="isDir" visibility="public" complexity="1" crap="1" count="9"/>
+        <line num="95" type="stmt" count="9"/>
+        <line num="98" type="method" name="isLink" visibility="public" complexity="1" crap="1" count="3"/>
+        <line num="100" type="stmt" count="3"/>
+        <metrics loc="102" ncloc="92" classes="1" methods="13" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="21" coveredstatements="21" elements="34" coveredelements="34"/>
+      </file>
+      <file name="/usr/share/nginx/html/kw_tree/php-src/TWhereDir.php">
+        <class name="TWhereDir" namespace="kalanis\kw_tree" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="8" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="12" coveredstatements="12" elements="15" coveredelements="15"/>
+        </class>
+        <line num="23" type="method" name="initWhereDir" visibility="public" complexity="2" crap="2" count="1"/>
+        <line num="25" type="stmt" count="1"/>
+        <line num="26" type="stmt" count="1"/>
+        <line num="27" type="stmt" count="1"/>
+        <line num="29" type="method" name="updateWhereDir" visibility="public" complexity="2" crap="2" count="1"/>
+        <line num="31" type="stmt" count="1"/>
+        <line num="32" type="stmt" count="1"/>
+        <line num="34" type="stmt" count="1"/>
+        <line num="36" type="method" name="getWhereDir" visibility="public" complexity="4" crap="4" count="1"/>
+        <line num="38" type="stmt" count="1"/>
+        <line num="39" type="stmt" count="1"/>
+        <line num="41" type="stmt" count="1"/>
+        <line num="42" type="stmt" count="1"/>
+        <line num="43" type="stmt" count="1"/>
+        <line num="45" type="stmt" count="1"/>
+        <metrics loc="47" ncloc="40" classes="1" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="12" coveredstatements="12" elements="15" coveredelements="15"/>
+      </file>
+      <file name="/usr/share/nginx/html/kw_tree/php-src/Tree.php">
+        <class name="kalanis\kw_tree\Tree" namespace="kalanis\kw_tree" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="16" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="34" coveredstatements="34" elements="41" coveredelements="41"/>
+        </class>
+        <line num="29" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="31" type="stmt" count="1"/>
+        <line num="32" type="stmt" count="1"/>
+        <line num="33" type="stmt" count="1"/>
+        <line num="35" type="method" name="canRecursive" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="37" type="stmt" count="1"/>
+        <line num="38" type="stmt" count="1"/>
+        <line num="40" type="method" name="startFromPath" visibility="public" complexity="2" crap="2" count="1"/>
+        <line num="42" type="stmt" count="1"/>
+        <line num="43" type="stmt" count="1"/>
+        <line num="44" type="stmt" count="1"/>
+        <line num="46" type="stmt" count="1"/>
+        <line num="51" type="method" name="setFilterCallback" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="53" type="stmt" count="1"/>
+        <line num="54" type="stmt" count="1"/>
+        <line num="56" type="method" name="process" visibility="public" complexity="8" crap="8" count="1"/>
+        <line num="58" type="stmt" count="1"/>
+        <line num="59" type="stmt" count="1"/>
+        <line num="60" type="stmt" count="1"/>
+        <line num="61" type="stmt" count="1"/>
+        <line num="63" type="stmt" count="1"/>
+        <line num="64" type="stmt" count="1"/>
+        <line num="65" type="stmt" count="1"/>
+        <line num="69" type="stmt" count="1"/>
+        <line num="70" type="stmt" count="1"/>
+        <line num="71" type="stmt" count="1"/>
+        <line num="72" type="stmt" count="1"/>
+        <line num="74" type="stmt" count="1"/>
+        <line num="75" type="stmt" count="1"/>
+        <line num="76" type="stmt" count="1"/>
+        <line num="77" type="stmt" count="1"/>
+        <line num="80" type="stmt" count="1"/>
+        <line num="81" type="stmt" count="1"/>
+        <line num="82" type="stmt" count="1"/>
+        <line num="83" type="stmt" count="1"/>
+        <line num="87" type="stmt" count="1"/>
+        <line num="88" type="stmt" count="1"/>
+        <line num="90" type="method" name="filterDoubleDot" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="92" type="stmt" count="1"/>
+        <line num="95" type="method" name="getTree" visibility="public" complexity="2" crap="2" count="1"/>
+        <line num="97" type="stmt" count="1"/>
+        <metrics loc="99" ncloc="78" classes="1" methods="7" coveredmethods="7" conditionals="0" coveredconditionals="0" statements="34" coveredstatements="34" elements="41" coveredelements="41"/>
+      </file>
+    </package>
+    <package name="kalanis\kw_tree\Filters">
+      <file name="/usr/share/nginx/html/kw_tree/php-src/Filters/DirFilter.php">
+        <class name="kalanis\kw_tree\Filters\DirFilter" namespace="kalanis\kw_tree\Filters" fullPackage="kalanis" package="kalanis">
+          <metrics complexity="5" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="17" coveredelements="17"/>
+        </class>
+        <line num="16" type="method" name="filter" visibility="public" complexity="5" crap="5" count="2"/>
+        <line num="18" type="stmt" count="2"/>
+        <line num="19" type="stmt" count="2"/>
+        <line num="22" type="stmt" count="1"/>
+        <line num="23" type="stmt" count="1"/>
+        <line num="24" type="stmt" count="1"/>
+        <line num="25" type="stmt" count="1"/>
+        <line num="26" type="stmt" count="1"/>
+        <line num="27" type="stmt" count="1"/>
+        <line num="28" type="stmt" count="1"/>
+        <line num="29" type="stmt" count="1"/>
+        <line num="30" type="stmt" count="1"/>
+        <line num="33" type="stmt" count="1"/>
+        <line num="34" type="stmt" count="1"/>
+        <line num="35" type="stmt" count="1"/>
+        <line num="36" type="stmt" count="1"/>
+        <line num="39" type="stmt" count="1"/>
+        <metrics loc="41" ncloc="34" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="16" elements="17" coveredelements="17"/>
+      </file>
+    </package>
+    <file name="/usr/share/nginx/html/kw_tree/php-src/Interfaces/ITree.php">
+      <metrics loc="20" ncloc="19" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
+    </file>
+    <metrics files="7" loc="426" ncloc="367" classes="6" methods="29" coveredmethods="29" conditionals="0" coveredconditionals="0" statements="130" coveredstatements="130" elements="159" coveredelements="159"/>
+  </project>
+</coverage>
