@@ -11,26 +11,37 @@ use kalanis\kw_tree\Tree;
 
 class TreeTest extends \CommonTestClass
 {
-    public function testTree(): void
+    public function testTreePresetDir(): void
     {
-        $paths = new Path();
-        $paths->setDocumentRoot(__DIR__ . '/../data'); // system root - where are all files
-        $lib = new Tree($paths);
-        $lib->startFromPath('tree'); // user's current dir to scan
+        $lib = $this->getTree();
         $lib->canRecursive(false);
         $lib->process();
         $this->assertNotEmpty($lib->getTree());
+    }
 
+    public function testTreeSubDirs(): void
+    {
+        $lib = $this->getTree();
         $lib->canRecursive(true);
         $lib->process();
         $this->assertNotEmpty($lib->getTree());
-        $this->assertNotEmpty($lib->getTree());
+    }
+
+    public function testTreeFilteredDirs(): void
+    {
+        $lib = $this->getTree();
+        $lib->canRecursive(false);
+        $lib->process();
 
         $filter = new DirFilter();
         $filtered = $filter->filter($lib->getTree());
         $this->assertNotEmpty($filtered);
-        $this->assertEquals(4, count($filtered->getSubNodes()));
+        $this->assertEquals(3, count($filtered->getSubNodes()));
+    }
 
+    public function testTreeGetFiles(): void
+    {
+        $lib = $this->getTree();
         $lib->setFilterCallback([$this, 'fileCallback']);
         $lib->canRecursive(false);
         $lib->process();
@@ -49,5 +60,14 @@ class TreeTest extends \CommonTestClass
         $filter = new DirFilter();
         $filtered = $filter->filter($source);
         $this->assertEmpty($filtered);
+    }
+
+    protected function getTree(): Tree
+    {
+        $paths = new Path();
+        $paths->setDocumentRoot(__DIR__ . '/../data'); // system root - where are all files
+        $lib = new Tree($paths);
+        $lib->startFromPath('tree'); // user's current dir to scan
+        return $lib;
     }
 }

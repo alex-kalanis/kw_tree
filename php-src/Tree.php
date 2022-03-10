@@ -71,6 +71,10 @@ class Tree
             $node = $this->nodeAdapter->process($item);
             $nodes[$node->getPath()] = $node; // full path
         }
+        if (isset($nodes[''])) {
+            $nodes[DIRECTORY_SEPARATOR] = $nodes[''];
+            unset($nodes['']);
+        }
         if (empty($nodes[DIRECTORY_SEPARATOR])) { // root dir has no upper path
             $item = new SplFileInfo($this->rootDir . $this->startFromPath);
             $node = $this->nodeAdapter->process($item);
