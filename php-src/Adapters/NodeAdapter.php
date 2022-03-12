@@ -5,7 +5,6 @@ namespace kalanis\kw_tree\Adapters;
 
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\FileNode;
-use kalanis\kw_tree\Interfaces\ITree;
 use SplFileInfo;
 
 
@@ -13,9 +12,22 @@ use SplFileInfo;
  * Class NodeAdapter
  * @package kalanis\kw_tree\Adapters
  * Create tree node from SplFileInfo
+
+Normal file
 path - the whole path against cutDir
-name - name of that none
+name - name of that file
+dir - upper directory with ending slash; can be only slash for root
+ *
+Normal dir
+path - the whole path against cutDir
+name - name of that dir without slash
 dir - upper directory with ending slash
+ *
+Root dir for lookup is a bit different:
+path - empty
+name - slash
+dir - slash
+
  */
 class NodeAdapter
 {
@@ -25,39 +37,48 @@ class NodeAdapter
     {
         $check = realpath($dir);
         if (false !== $check) {
-            $this->cutDir = $check;
+            $this->cutDir = $check . DIRECTORY_SEPARATOR;
         }
         return $this;
     }
 
     public function process(SplFileInfo $info): FileNode
     {
-        $node = new FileNode();
-        $path = $this->cutPath($info->getRealPath());
-        $dir = Stuff::removeEndingSlash(Stuff::directory($path));
-        if (ITree::CURRENT_DIR == $info->getFilename()) {
-            $name = Stuff::filename($path);
-            $node->setData(
-                empty($name) ? DIRECTORY_SEPARATOR : $name,
-                empty($dir) ? DIRECTORY_SEPARATOR : $dir,
-                $path,
-                $info->getSize(),
-                $info->getType(),
-                $info->isReadable(),
-                $info->isWritable()
-            );
+        $pathToCut = $this->shortRealPath($info);
+        $path = $this->cutPath($pathToCut);
+
+        if (empty($path)) {
+            // root
+            $name = DIRECTORY_SEPARATOR;
+            $dir = DIRECTORY_SEPARATOR;
         } else {
-            $node->setData(
-                $info->getFilename(),
-                empty($dir) ? DIRECTORY_SEPARATOR : $dir,
-                $path,
-                $info->getSize(),
-                $info->getType(),
-                $info->isReadable(),
-                $info->isWritable()
-            );
+            // other dirs, files, pipes, etc...
+            $name = Stuff::filename($path);  // DO NOT USE $info->getFilename() -> for dir it returns '.' !!!
+            $dir = Stuff::directory($path);
+            $dir = empty($dir) ? '' : Stuff::removeEndingSlash($dir) . DIRECTORY_SEPARATOR;
         }
+
+//print_r(['info' => $info, 'path' => $pathToCut, 'cut' => $path, 'dir' => $dir, 'name' => $name]);
+        $node = new FileNode();
+        $node->setData(
+            $path,
+            $dir,
+            $name,
+            $info->getSize(),
+            $info->getType(),
+            $info->isReadable(),
+            $info->isWritable()
+        );
         return $node;
+    }
+
+    protected function shortRealPath(SplFileInfo $info): string
+    {
+        $path = $info->getRealPath();
+        return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
+            ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
+            : $path
+        ;
     }
 
     protected function cutPath(string $path): string

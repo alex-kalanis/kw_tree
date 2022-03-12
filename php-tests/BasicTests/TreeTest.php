@@ -11,6 +11,11 @@ use kalanis\kw_tree\Tree;
 
 class TreeTest extends \CommonTestClass
 {
+    public function testRootRealDir(): void
+    {
+        $this->assertEquals(DIRECTORY_SEPARATOR, realpath(DIRECTORY_SEPARATOR));
+    }
+
     public function testTreePresetDir(): void
     {
         $lib = $this->getTree();

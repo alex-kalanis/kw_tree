@@ -6,6 +6,7 @@ namespace kalanis\kw_tree;
 use CallbackFilterIterator;
 use FilesystemIterator;
 use kalanis\kw_paths\Path;
+use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Interfaces\ITree;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -55,10 +56,9 @@ class Tree
 
     public function process(): void
     {
-        $flags = FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO ;
         $iter = $this->loadRecursive
-            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->rootDir . $this->startFromPath, $flags))
-            : new FilesystemIterator($this->rootDir . $this->startFromPath, $flags)
+            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->rootDir . $this->startFromPath))
+            : new FilesystemIterator($this->rootDir . $this->startFromPath)
         ;
         $iter = new CallbackFilterIterator($iter, [$this, 'filterDoubleDot']);
         if ($this->filterCallback) {
@@ -68,32 +68,45 @@ class Tree
         /** @var FileNode[] $nodes */
         $nodes = [];
         foreach ($iter as $item) {
-            $node = $this->nodeAdapter->process($item);
-            $nodes[$node->getPath()] = $node; // full path
+            $eachNode = $this->nodeAdapter->process($item);
+            $nodes[$this->getKey($eachNode)] = $eachNode; // full path
         }
-        if (isset($nodes[''])) {
-            $nodes[DIRECTORY_SEPARATOR] = $nodes[''];
-            unset($nodes['']);
+        if (isset($nodes[DIRECTORY_SEPARATOR])) {
+            $nodes[''] = $nodes[DIRECTORY_SEPARATOR];
+            unset($nodes[DIRECTORY_SEPARATOR]);
         }
-        if (empty($nodes[DIRECTORY_SEPARATOR])) { // root dir has no upper path
+        if (empty($nodes[''])) { // root dir has no upper path
             $item = new SplFileInfo($this->rootDir . $this->startFromPath);
-            $node = $this->nodeAdapter->process($item);
-            $nodes[DIRECTORY_SEPARATOR] = $node; // root node
+            $rootNode = $this->nodeAdapter->process($item);
+            $nodes[''] = $rootNode; // root node
         }
 
+//print_r($nodes);
         foreach ($nodes as $index => &$node) {
-            if (DIRECTORY_SEPARATOR != $index) { // not parent for root
+            if ('' != $index) { // not parent for root
                 if ($nodes[$node->getDir()] !== $node) { // beware of unintended recursion
                     $nodes[$node->getDir()]->addSubNode($node); // and now only to parent dir
                 }
             }
         }
-        $this->loadedTree = $nodes[DIRECTORY_SEPARATOR];
+        $this->loadedTree = $nodes[''];
+//print_r($this->loadedTree);
     }
 
     public function filterDoubleDot(SplFileInfo $info): bool
     {
         return ( ITree::PARENT_DIR != $info->getFilename() ) ;
+    }
+
+    protected function getKey(FileNode $node): string
+    {
+        return $node->isDir()
+            ? (empty($node->getPath())
+                ? $node->getName()
+                : Stuff::removeEndingSlash($node->getPath()) . DIRECTORY_SEPARATOR
+            )
+            : $node->getPath()
+        ;
     }
 
     public function getTree(): ?FileNode

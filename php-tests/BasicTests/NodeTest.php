@@ -19,10 +19,10 @@ class NodeTest extends \CommonTestClass
      * @param bool $write
      * @dataProvider dataProvider
      */
-    public function testLinks(string $name, string $dir, string $path, int $size, string $type, bool $read, bool $write, bool $asFile, bool $asDir, bool $asLink): void
+    public function testSimpleNode(string $name, string $dir, string $path, int $size, string $type, bool $read, bool $write, bool $asFile, bool $asDir, bool $asLink): void
     {
         $lib = new FileNode();
-        $lib->setData($name, $dir, $path, $size, $type, $read, $write);
+        $lib->setData($path, $dir, $name, $size, $type, $read, $write);
         $this->assertEquals($name, $lib->getName());
         $this->assertEquals($dir, $lib->getDir());
         $this->assertEquals($path, $lib->getPath());
@@ -47,9 +47,9 @@ class NodeTest extends \CommonTestClass
     public function testSubNodes(): void
     {
         $lib = new FileNode();
-        $lib->setData('abcdef', '', '', 0, '', true, false);
+        $lib->setData('abcdef', '', 'abcdef', 0, '', true, false);
         $sub = new FileNode();
-        $sub->setData('ghijkl', '', '', 0, '', false, true);
+        $sub->setData('ghijkl', '', 'ghijkl', 0, '', false, true);
         $lib->addSubNode($sub);
         $inside = $lib->getSubNodes();
         $this->assertEquals(1, count($inside));

@@ -1,6 +1,6 @@
 # kw_tree
 
-Tree of files and directories. Load it for futher usage.
+Tree of files and directories. Access them from the specified path.
 
 ## PHP Installation
 

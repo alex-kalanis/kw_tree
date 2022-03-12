@@ -16,9 +16,9 @@ class ArrayAdapter
     public function pack(FileNode $node): array
     {
         return [
-            'name' => $node->getName(),
-            'dir' => $node->getDir(),
             'path' => $node->getPath(),
+            'dir' => $node->getDir(),
+            'name' => $node->getName(),
             'size' => $node->getSize(),
             'type' => $node->getType(),
             'read' => intval($node->isReadable()),
@@ -31,9 +31,9 @@ class ArrayAdapter
     {
         $node = new FileNode();
         $node->setData(
-            $array['name'],
-            $array['dir'],
             $array['path'],
+            $array['dir'],
+            $array['name'],
             intval($array['size']),
             $array['type'],
             boolval($array['read']),

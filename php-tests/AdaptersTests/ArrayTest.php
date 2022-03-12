@@ -23,7 +23,7 @@ class ArrayTest extends \CommonTestClass
     public function testAdapter(string $name, string $dir, string $path, int $size, string $type, bool $read, bool $write): void
     {
         $node = new FileNode();
-        $node->setData($name, $dir, $path, $size, $type, $read, $write);
+        $node->setData($path, $dir, $name, $size, $type, $read, $write);
         $sub = new FileNode();
         $sub->setData('ab', 'cd', 'ef', 32, 'gh', false, false);
         $node->addSubNode($sub);
