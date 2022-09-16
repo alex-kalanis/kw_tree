@@ -3,14 +3,7 @@
 namespace kalanis\kw_tree;
 
 
-use CallbackFilterIterator;
-use FilesystemIterator;
-use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
-use kalanis\kw_tree\Interfaces\ITree;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
+use kalanis\kw_tree\Interfaces\IDataSource;
 
 
 /**
@@ -20,30 +13,26 @@ use SplFileInfo;
  */
 class Tree
 {
-    protected $nodeAdapter = null;
-    protected $loadRecursive = false;
-    protected $rootDir = '';
-    protected $startFromPath = '';
-    protected $filterCallback = null;
+    /** @var IDataSource */
+    protected $dataSource = null;
+    /** @var Essentials\FileNode|null */
     protected $loadedTree = null;
+    /** @var callback|callable|null */
+    protected $nodesCallback = null;
 
-    public function __construct(Path $path)
+    public function __construct(IDataSource $dataSource)
     {
-        $this->rootDir = realpath($path->getDocumentRoot() . $path->getPathToSystemRoot()) . DIRECTORY_SEPARATOR;
-        $this->nodeAdapter = new Adapters\NodeAdapter();
+        $this->dataSource = $dataSource;
     }
 
     public function canRecursive(bool $recursive): void
     {
-        $this->loadRecursive = $recursive;
+        $this->dataSource->canRecursive($recursive);
     }
 
     public function startFromPath(string $path): void
     {
-        if (false !== ($knownPath = realpath($this->rootDir . $path))) {
-            $this->startFromPath = $path;
-            $this->nodeAdapter->cutDir($knownPath . DIRECTORY_SEPARATOR);
-        }
+        $this->dataSource->startFromPath($path);
     }
 
     /**
@@ -51,34 +40,25 @@ class Tree
      */
     public function setFilterCallback($callback = null): void
     {
-        $this->filterCallback = $callback;
+        $this->dataSource->setFilterCallback($callback);
+    }
+
+    /**
+     * @param callback|callable|null $callback
+     */
+    public function setNodesCallback($callback = null): void
+    {
+        $this->nodesCallback = $callback;
     }
 
     public function process(): void
     {
-        $iter = $this->loadRecursive
-            ? new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->rootDir . $this->startFromPath))
-            : new FilesystemIterator($this->rootDir . $this->startFromPath)
-        ;
-        $iter = new CallbackFilterIterator($iter, [$this, 'filterDoubleDot']);
-        if ($this->filterCallback) {
-            $iter = new CallbackFilterIterator($iter, $this->filterCallback);
-        }
+        $this->dataSource->process();
+        $nodes = $this->dataSource->getNodes();
+        /** @var Essentials\FileNode[] $nodes */
 
-        /** @var FileNode[] $nodes */
-        $nodes = [];
-        foreach ($iter as $item) {
-            $eachNode = $this->nodeAdapter->process($item);
-            $nodes[$this->getKey($eachNode)] = $eachNode; // full path
-        }
-        if (isset($nodes[DIRECTORY_SEPARATOR])) {
-            $nodes[''] = $nodes[DIRECTORY_SEPARATOR];
-            unset($nodes[DIRECTORY_SEPARATOR]);
-        }
-        if (empty($nodes[''])) { // root dir has no upper path
-            $item = new SplFileInfo($this->rootDir . $this->startFromPath);
-            $rootNode = $this->nodeAdapter->process($item);
-            $nodes[''] = $rootNode; // root node
+        if ($this->nodesCallback) {
+            $nodes = array_filter($nodes, $this->nodesCallback);
         }
 
 //print_r($nodes);
@@ -93,23 +73,7 @@ class Tree
 //print_r($this->loadedTree);
     }
 
-    public function filterDoubleDot(SplFileInfo $info): bool
-    {
-        return ( ITree::PARENT_DIR != $info->getFilename() ) ;
-    }
-
-    protected function getKey(FileNode $node): string
-    {
-        return $node->isDir()
-            ? (empty($node->getPath())
-                ? $node->getName()
-                : Stuff::removeEndingSlash($node->getPath()) . DIRECTORY_SEPARATOR
-            )
-            : $node->getPath()
-        ;
-    }
-
-    public function getTree(): ?FileNode
+    public function getTree(): ?Essentials\FileNode
     {
         return $this->loadedTree;
     }

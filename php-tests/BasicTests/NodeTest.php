@@ -3,7 +3,7 @@
 namespace BasicTests;
 
 
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 
 

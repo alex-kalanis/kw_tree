@@ -4,7 +4,8 @@ namespace BasicTests;
 
 
 use kalanis\kw_paths\Path;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\DataSources\Volume;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Filters\DirFilter;
 use kalanis\kw_tree\Tree;
 
@@ -71,7 +72,7 @@ class TreeTest extends \CommonTestClass
     {
         $paths = new Path();
         $paths->setDocumentRoot(__DIR__ . '/../data'); // system root - where are all files
-        $lib = new Tree($paths);
+        $lib = new Tree(new Volume($paths));
         $lib->startFromPath('tree'); // user's current dir to scan
         return $lib;
     }

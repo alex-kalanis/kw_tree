@@ -4,7 +4,7 @@ namespace kalanis\kw_tree;
 
 
 use ArrayAccess;
-use kalanis\kw_input\Interfaces\IVariables;
+use kalanis\kw_input\Interfaces\IFiltered;
 
 
 /**
@@ -14,13 +14,14 @@ use kalanis\kw_input\Interfaces\IVariables;
  */
 trait TWhereDir
 {
+    /** @var string */
     protected $whereConst = 'dir';
     /** @var ArrayAccess|null */
     protected $storeWhere = null;
-    /** @var IVariables|null */
+    /** @var IFiltered|null */
     protected $anotherSource = null;
 
-    public function initWhereDir(ArrayAccess $storeWhere, ?IVariables $inputs): void
+    public function initWhereDir(ArrayAccess $storeWhere, ?IFiltered $inputs): void
     {
         $this->storeWhere = $storeWhere;
         $this->anotherSource = $inputs;

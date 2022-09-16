@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_tree;
+namespace kalanis\kw_tree\Essentials;
 
 
 use kalanis\kw_tree\Interfaces\ITree;
@@ -8,18 +8,25 @@ use kalanis\kw_tree\Interfaces\ITree;
 
 /**
  * Class FileNode
- * @package kalanis\kw_tree
+ * @package kalanis\kw_tree\Essentials
  * File in directory (could be directory too)
  * Different, yet similar to SplFileInfo because it's possible to pack and unpack the whole thing without access to real volume
  */
 class FileNode
 {
+    /** @var string */
     protected $path = '';
+    /** @var string */
     protected $dir = '';
+    /** @var string */
     protected $name = '';
+    /** @var string */
     protected $type = ITree::TYPE_UNKNOWN;
+    /** @var int */
     protected $size = 0;
+    /** @var bool */
     protected $readable = false;
+    /** @var bool */
     protected $writable = false;
     /** @var FileNode[] */
     protected $subNodes = [];

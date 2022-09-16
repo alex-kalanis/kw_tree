@@ -3,7 +3,7 @@
 namespace AdaptersTests;
 
 
-use kalanis\kw_tree\Adapters\NodeAdapter;
+use kalanis\kw_tree\Adapters\VolumeNodeAdapter;
 use kalanis\kw_tree\Interfaces\ITree;
 
 
@@ -21,7 +21,7 @@ class NodeTest extends \CommonTestClass
     public function testLinks(string $path, string $dir, string $name, string $type, bool $isFile, bool $isDir): void
     {
         $src = new \SplFileInfo($path);
-        $lib = new NodeAdapter();
+        $lib = new VolumeNodeAdapter();
         $lib->cutDir($this->getSysDir());
         $node = $lib->process($src);
         if (

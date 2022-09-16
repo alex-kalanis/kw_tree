@@ -3,7 +3,7 @@
 namespace kalanis\kw_tree\Filters;
 
 
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 
 
 /**

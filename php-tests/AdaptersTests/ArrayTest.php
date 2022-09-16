@@ -4,7 +4,7 @@ namespace AdaptersTests;
 
 
 use kalanis\kw_tree\Adapters\ArrayAdapter;
-use kalanis\kw_tree\FileNode;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 
 

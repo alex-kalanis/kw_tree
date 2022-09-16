@@ -5,7 +5,7 @@ namespace BasicTests;
 
 use kalanis\kw_input\Inputs;
 use kalanis\kw_input\Sources\Basic;
-use kalanis\kw_input\Variables;
+use kalanis\kw_input\Filtered;
 use kalanis\kw_tree\TWhereDir;
 
 
@@ -28,7 +28,7 @@ class WhereTest extends \CommonTestClass
         $inputs->loadEntries();
 
         // now check externally
-        $lib->initWhereDir(new \ArrayObject(), new Variables($inputs));
+        $lib->initWhereDir(new \ArrayObject(), new Filtered\Variables($inputs));
         $this->assertEquals('qaywsxedc/rfv/tgbznh', $lib->getWhereDir());
 
         // own values
