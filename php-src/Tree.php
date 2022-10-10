@@ -3,6 +3,8 @@
 namespace kalanis\kw_tree;
 
 
+use kalanis\kw_paths\Interfaces\IPaths;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\IDataSource;
 
 
@@ -61,16 +63,22 @@ class Tree
             $nodes = array_filter($nodes, $this->nodesCallback);
         }
 
-//print_r($nodes);
+print_r($nodes);
         foreach ($nodes as $index => &$node) {
             if ('' != $index) { // not parent for root
-                if ($nodes[$node->getDir()] !== $node) { // beware of unintended recursion
-                    $nodes[$node->getDir()]->addSubNode($node); // and now only to parent dir
+                $dir = $this->dirPathToString($node);
+                if ($nodes[$dir] !== $node) { // beware of unintended recursion
+                    $nodes[$dir]->addSubNode($node); // and now only to parent dir
                 }
             }
         }
         $this->loadedTree = $nodes[''];
 //print_r($this->loadedTree);
+    }
+
+    protected function dirPathToString(FileNode $node): string
+    {
+        return implode(IPaths::SPLITTER_SLASH, array_slice($node->getPath(), 0, -1));
     }
 
     public function getTree(): ?Essentials\FileNode

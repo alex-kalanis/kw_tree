@@ -35,16 +35,17 @@ abstract class ADataStorage
 
     protected function getKey(FileNode $node): string
     {
-        return $node->isDir()
-            ? (empty($node->getPath())
-                ? $node->getName()
-                : $this->getDirKey($node->getPath())
-            )
-            : $node->getPath()
+        return empty($node->getPath())
+            ? ''
+            : $this->getDirKey($node->getPath())
         ;
     }
 
-    abstract protected function getDirKey(string $path): string;
+    /**
+     * @param string[] $path
+     * @return string
+     */
+    abstract protected function getDirKey(array $path): string;
 
     public function getNodes(): array
     {

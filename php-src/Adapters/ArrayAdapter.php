@@ -17,8 +17,6 @@ class ArrayAdapter
     {
         return [
             'path' => $node->getPath(),
-            'dir' => $node->getDir(),
-            'name' => $node->getName(),
             'size' => $node->getSize(),
             'type' => $node->getType(),
             'read' => intval($node->isReadable()),
@@ -32,8 +30,6 @@ class ArrayAdapter
         $node = new FileNode();
         $node->setData(
             $array['path'],
-            $array['dir'],
-            $array['name'],
             intval($array['size']),
             $array['type'],
             boolval($array['read']),

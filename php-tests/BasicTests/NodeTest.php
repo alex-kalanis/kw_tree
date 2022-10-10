@@ -10,21 +10,17 @@ use kalanis\kw_tree\Interfaces\ITree;
 class NodeTest extends \CommonTestClass
 {
     /**
-     * @param string $name
-     * @param string $dir
-     * @param string $path
+     * @param string[] $path
      * @param int $size
      * @param string $type
      * @param bool $read
      * @param bool $write
      * @dataProvider dataProvider
      */
-    public function testSimpleNode(string $name, string $dir, string $path, int $size, string $type, bool $read, bool $write, bool $asFile, bool $asDir, bool $asLink): void
+    public function testSimpleNode(array $path, int $size, string $type, bool $read, bool $write, bool $asFile, bool $asDir, bool $asLink): void
     {
         $lib = new FileNode();
-        $lib->setData($path, $dir, $name, $size, $type, $read, $write);
-        $this->assertEquals($name, $lib->getName());
-        $this->assertEquals($dir, $lib->getDir());
+        $lib->setData($path, $size, $type, $read, $write);
         $this->assertEquals($path, $lib->getPath());
         $this->assertEquals($size, $lib->getSize());
         $this->assertEquals($type, $lib->getType());
@@ -38,21 +34,21 @@ class NodeTest extends \CommonTestClass
     public function dataProvider(): array
     {
         return [
-            ['abc', 'def', 'ghi', 123, ITree::TYPE_UNKNOWN, false, false, false, false, false],
-            ['jkl', '', '', 456, ITree::TYPE_DIR, false, true, false, true, false],
-            ['mno', 'pqr', '', 789, ITree::TYPE_LINK, false, true, false, false, true],
+            [['abc', 'def', 'ghi'], 123, ITree::TYPE_UNKNOWN, false, false, false, false, false],
+            [['jkl', ], 456, ITree::TYPE_DIR, false, true, false, true, false],
+            [['mno', 'pqr', ], 789, ITree::TYPE_LINK, false, true, false, false, true],
         ];
     }
 
     public function testSubNodes(): void
     {
         $lib = new FileNode();
-        $lib->setData('abcdef', '', 'abcdef', 0, '', true, false);
+        $lib->setData(['abcdef', 'abcdef'], 0, '', true, false);
         $sub = new FileNode();
-        $sub->setData('ghijkl', '', 'ghijkl', 0, '', false, true);
+        $sub->setData(['ghijkl', 'ghijkl'], 0, '', false, true);
         $lib->addSubNode($sub);
         $inside = $lib->getSubNodes();
         $this->assertEquals(1, count($inside));
-        $this->assertEquals('ghijkl', reset($inside)->getName());
+        $this->assertEquals(['ghijkl', 'ghijkl'], reset($inside)->getPath());
     }
 }

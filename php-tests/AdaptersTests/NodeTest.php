@@ -30,8 +30,6 @@ class NodeTest extends \CommonTestClass
         ) {
             $this->assertEquals($path, $this->getSysDir() . $dir . $name);
         }
-        $this->assertEquals($name, $node->getName());
-        $this->assertEquals($dir, $node->getDir());
         $this->assertEquals($type, $node->getType());
         $this->assertEquals($isFile, $node->isFile());
         $this->assertEquals($isDir, $node->isDir());

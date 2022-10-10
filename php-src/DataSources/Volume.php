@@ -6,6 +6,7 @@ namespace kalanis\kw_tree\DataSources;
 use CallbackFilterIterator;
 use FilesystemIterator;
 use Iterator;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Adapters;
@@ -57,9 +58,9 @@ class Volume extends ADataStorage implements IDataSource
             $eachNode = $this->nodeAdapter->process($item);
             $nodes[$this->getKey($eachNode)] = $eachNode; // full path
         }
-        if (isset($nodes[DIRECTORY_SEPARATOR])) {
-            $nodes[''] = $nodes[DIRECTORY_SEPARATOR];
-            unset($nodes[DIRECTORY_SEPARATOR]);
+        if (isset($nodes[IPaths::SPLITTER_SLASH])) {
+            $nodes[''] = $nodes[IPaths::SPLITTER_SLASH];
+            unset($nodes[IPaths::SPLITTER_SLASH]);
         }
         if (empty($nodes[''])) { // root dir has no upper path
             $item = new SplFileInfo($this->rootDir . $this->startFromPath);
@@ -69,9 +70,9 @@ class Volume extends ADataStorage implements IDataSource
         $this->nodes = $nodes;
     }
 
-    protected function getDirKey(string $path): string
+    protected function getDirKey(array $path): string
     {
-        return Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR;
+        return Stuff::arrayToLink($path);
     }
 
     protected function getFlat(): Iterator

@@ -22,8 +22,6 @@ class DirFilter
         $node = new FileNode(); // original one has everything - and I want only a few things
         $node->setData(
             $baseNode->getPath(),
-            $baseNode->getDir(),
-            $baseNode->getName(),
             $baseNode->getSize(),
             $baseNode->getType(),
             $baseNode->isReadable(),

@@ -3,7 +3,6 @@
 namespace kalanis\kw_tree\Interfaces;
 
 
-use Iterator;
 use kalanis\kw_tree\Essentials\FileNode;
 
 

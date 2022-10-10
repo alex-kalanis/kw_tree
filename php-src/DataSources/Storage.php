@@ -4,6 +4,7 @@ namespace kalanis\kw_tree\DataSources;
 
 
 use CallbackFilterIterator;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_tree\Adapters;
 use kalanis\kw_tree\Interfaces\IDataSource;
@@ -26,7 +27,7 @@ class Storage extends ADataStorage implements IDataSource
     /** @var Adapters\StorageNodeAdapter */
     protected $nodeAdapter = null;
     protected $startFromPath = '';
-    protected $dirDelimiter = DIRECTORY_SEPARATOR;
+    protected $dirDelimiter = IPaths::SPLITTER_SLASH;
 
     public function __construct(IStorage $storage)
     {
@@ -65,10 +66,9 @@ class Storage extends ADataStorage implements IDataSource
 
     }
 
-    protected function getDirKey(string $path): string
+    protected function getDirKey(array $path): string
     {
-        $name = ($this->dirDelimiter == mb_substr($path, -1, 1)) ? mb_substr($path, 0, -1) : $path ;
-        return $name . $this->dirDelimiter;
+        return (0 < count($path)) ? implode($this->dirDelimiter, array_slice($path, 0, -1)) : '' ;
     }
 
     protected function getFlat(): \Traversable

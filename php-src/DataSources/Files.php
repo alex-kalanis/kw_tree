@@ -72,10 +72,9 @@ class Files extends ADataStorage implements IDataSource
         $this->nodes = $nodes;
     }
 
-    protected function getDirKey(string $path): string
+    protected function getDirKey(array $path): string
     {
-        $name = ($this->dirDelimiter == mb_substr($path, -1, 1)) ? mb_substr($path, 0, -1) : $path ;
-        return $name . $this->dirDelimiter;
+        return (0 < count($path)) ? implode($this->dirDelimiter, array_slice($path, 0, -1)) : '' ;
     }
 
     public function filterDoubleDot(string $name): bool

@@ -14,12 +14,8 @@ use kalanis\kw_tree\Interfaces\ITree;
  */
 class FileNode
 {
-    /** @var string */
-    protected $path = '';
-    /** @var string */
-    protected $dir = '';
-    /** @var string */
-    protected $name = '';
+    /** @var string[] */
+    protected $path = [];
     /** @var string */
     protected $type = ITree::TYPE_UNKNOWN;
     /** @var int */
@@ -31,11 +27,17 @@ class FileNode
     /** @var FileNode[] */
     protected $subNodes = [];
 
-    public function setData(string $path, string $dir, string $name, int $size, string $type, bool $readable, bool $writable): self
+    /**
+     * @param string[] $path
+     * @param int $size
+     * @param string $type
+     * @param bool $readable
+     * @param bool $writable
+     * @return $this
+     */
+    public function setData(array $path, int $size, string $type, bool $readable, bool $writable): self
     {
         $this->path = $path;
-        $this->dir = $dir;
-        $this->name = $name;
         $this->size = $size;
         $this->type = $type;
         $this->readable = $readable;
@@ -57,19 +59,12 @@ class FileNode
         return $this->subNodes;
     }
 
-    public function getPath(): string
+    /**
+     * @return string[]
+     */
+    public function getPath(): array
     {
         return $this->path;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getDir(): string
-    {
-        return $this->dir;
     }
 
     public function getSize(): int
