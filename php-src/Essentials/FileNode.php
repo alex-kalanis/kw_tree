@@ -3,7 +3,7 @@
 namespace kalanis\kw_tree\Essentials;
 
 
-use kalanis\kw_tree\Interfaces\ITree;
+use kalanis\kw_files\Interfaces\ITypes;
 
 
 /**
@@ -17,7 +17,7 @@ class FileNode
     /** @var string[] */
     protected $path = [];
     /** @var string */
-    protected $type = ITree::TYPE_UNKNOWN;
+    protected $type = ITypes::TYPE_UNKNOWN;
     /** @var int */
     protected $size = 0;
     /** @var bool */
@@ -89,16 +89,16 @@ class FileNode
 
     public function isFile(): bool
     {
-        return ITree::TYPE_FILE == $this->type;
+        return ITypes::TYPE_FILE == $this->type;
     }
 
     public function isDir(): bool
     {
-        return ITree::TYPE_DIR == $this->type;
+        return ITypes::TYPE_DIR == $this->type;
     }
 
     public function isLink(): bool
     {
-        return ITree::TYPE_LINK == $this->type;
+        return ITypes::TYPE_LINK == $this->type;
     }
 }

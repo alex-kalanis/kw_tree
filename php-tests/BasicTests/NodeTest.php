@@ -3,8 +3,8 @@
 namespace BasicTests;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_tree\Essentials\FileNode;
-use kalanis\kw_tree\Interfaces\ITree;
 
 
 class NodeTest extends \CommonTestClass
@@ -34,9 +34,9 @@ class NodeTest extends \CommonTestClass
     public function dataProvider(): array
     {
         return [
-            [['abc', 'def', 'ghi'], 123, ITree::TYPE_UNKNOWN, false, false, false, false, false],
-            [['jkl', ], 456, ITree::TYPE_DIR, false, true, false, true, false],
-            [['mno', 'pqr', ], 789, ITree::TYPE_LINK, false, true, false, false, true],
+            [['abc', 'def', 'ghi'], 123, ITypes::TYPE_UNKNOWN, false, false, false, false, false],
+            [['jkl', ], 456, ITypes::TYPE_DIR, false, true, false, true, false],
+            [['mno', 'pqr', ], 789, ITypes::TYPE_LINK, false, true, false, false, true],
         ];
     }
 

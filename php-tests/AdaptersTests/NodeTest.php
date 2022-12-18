@@ -3,8 +3,8 @@
 namespace AdaptersTests;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_tree\Adapters\VolumeNodeAdapter;
-use kalanis\kw_tree\Interfaces\ITree;
 
 
 class NodeTest extends \CommonTestClass
@@ -26,7 +26,7 @@ class NodeTest extends \CommonTestClass
         $node = $lib->process($src);
         if (
             (DIRECTORY_SEPARATOR != $name) // you cannot compare root directory path without realpath()
-            && ('.' != mb_substr($path, -1)) // cou cannot compare dir represented with dot (as current)
+            && ('.' != mb_substr($path, -1)) // you cannot compare dir represented with dot (as current)
         ) {
             $this->assertEquals($path, $this->getSysDir() . $dir . $name);
         }
@@ -38,13 +38,13 @@ class NodeTest extends \CommonTestClass
     public function pathsProvider(): array
     {
         return [
-            [$this->getSysDir() . 'other1.txt', '', 'other1.txt', ITree::TYPE_FILE, true, false],
-            [$this->getSysDir() . 'sub' . DIRECTORY_SEPARATOR . 'dummy3.txt', 'sub' . DIRECTORY_SEPARATOR, 'dummy3.txt', ITree::TYPE_FILE, true, false],
-            [$this->getSysDir() . 'next_one', '', 'next_one', ITree::TYPE_DIR, false, true],
-            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . '.', '', 'next_one', ITree::TYPE_DIR, false, true],
-            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . 'sub_one' . DIRECTORY_SEPARATOR . '.', 'next_one' . DIRECTORY_SEPARATOR, 'sub_one', ITree::TYPE_DIR, false, true],
-            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . 'sub_one', 'next_one' . DIRECTORY_SEPARATOR, 'sub_one', ITree::TYPE_DIR, false, true],
-            [$this->getSysDir(), DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, ITree::TYPE_DIR, false, true],
+            [$this->getSysDir() . 'other1.txt', '', 'other1.txt', ITypes::TYPE_FILE, true, false],
+            [$this->getSysDir() . 'sub' . DIRECTORY_SEPARATOR . 'dummy3.txt', 'sub' . DIRECTORY_SEPARATOR, 'dummy3.txt', ITypes::TYPE_FILE, true, false],
+            [$this->getSysDir() . 'next_one', '', 'next_one', ITypes::TYPE_DIR, false, true],
+            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . '.', '', 'next_one', ITypes::TYPE_DIR, false, true],
+            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . 'sub_one' . DIRECTORY_SEPARATOR . '.', 'next_one' . DIRECTORY_SEPARATOR, 'sub_one', ITypes::TYPE_DIR, false, true],
+            [$this->getSysDir() . 'next_one' . DIRECTORY_SEPARATOR . 'sub_one', 'next_one' . DIRECTORY_SEPARATOR, 'sub_one', ITypes::TYPE_DIR, false, true],
+            [$this->getSysDir(), DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, ITypes::TYPE_DIR, false, true],
         ];
     }
 

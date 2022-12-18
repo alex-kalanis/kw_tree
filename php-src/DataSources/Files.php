@@ -5,8 +5,10 @@ namespace kalanis\kw_tree\DataSources;
 
 use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\IProcessDirs;
+use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Adapters;
 use kalanis\kw_tree\Interfaces\IDataSource;
@@ -31,12 +33,12 @@ class Files extends ADataStorage implements IDataSource
     /** @var string[] */
     protected $startFromPath = [];
     /** @var string */
-    protected $dirDelimiter = DIRECTORY_SEPARATOR;
+    protected $dirDelimiter = IPaths::SPLITTER_SLASH;
 
-    public function __construct(IProcessDirs $dirTree)
+    public function __construct(IProcessDirs $dirTree, IProcessNodes $nodeProcessor)
     {
         $this->dirTree = $dirTree;
-        $this->nodeAdapter = new Adapters\FilesNodeAdapter();
+        $this->nodeAdapter = new Adapters\FilesNodeAdapter($nodeProcessor);
     }
 
     public function startFromPath(string $path): void

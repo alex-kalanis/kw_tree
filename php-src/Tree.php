@@ -38,6 +38,7 @@ class Tree
     }
 
     /**
+     * Filter over internal data source
      * @param callback|callable|null $callback
      */
     public function setFilterCallback($callback = null): void
@@ -46,6 +47,7 @@ class Tree
     }
 
     /**
+     * Filter over established nodes
      * @param callback|callable|null $callback
      */
     public function setNodesCallback($callback = null): void
@@ -63,20 +65,33 @@ class Tree
             $nodes = array_filter($nodes, $this->nodesCallback);
         }
 
-print_r($nodes);
-        foreach ($nodes as $index => &$node) {
-            if ('' != $index) { // not parent for root
-                $dir = $this->dirPathToString($node);
-                if ($nodes[$dir] !== $node) { // beware of unintended recursion
-                    $nodes[$dir]->addSubNode($node); // and now only to parent dir
-                }
+//print_r($nodes);
+        $tree = [];
+        // paths to keys
+        foreach ($nodes as &$node) {
+            $tree[$this->currentDirPathToString($node)] = $node;
+        }
+//print_r($tree);
+
+        // add subnodes
+        foreach ($nodes as &$node) {
+            $parentDir = $this->parentDirPathToString($node);
+            if ($tree[$parentDir] !== $node) { // beware of unintended recursion
+                $tree[$parentDir]->addSubNode($node); // and now only to parent dir
             }
         }
-        $this->loadedTree = $nodes[''];
+
+        // set root node as result
+        $this->loadedTree = $tree[''];
 //print_r($this->loadedTree);
     }
 
-    protected function dirPathToString(FileNode $node): string
+    protected function currentDirPathToString(FileNode $node): string
+    {
+        return implode(IPaths::SPLITTER_SLASH, $node->getPath());
+    }
+
+    protected function parentDirPathToString(FileNode $node): string
     {
         return implode(IPaths::SPLITTER_SLASH, array_slice($node->getPath(), 0, -1));
     }

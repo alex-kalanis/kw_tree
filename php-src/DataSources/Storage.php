@@ -3,12 +3,13 @@
 namespace kalanis\kw_tree\DataSources;
 
 
-use CallbackFilterIterator;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\StorageException;
 use kalanis\kw_tree\Adapters;
 use kalanis\kw_tree\Interfaces\IDataSource;
 use kalanis\kw_tree\Interfaces\ITree;
+use Traversable;
 
 
 /**
@@ -26,13 +27,16 @@ class Storage extends ADataStorage implements IDataSource
     protected $storage = null;
     /** @var Adapters\StorageNodeAdapter */
     protected $nodeAdapter = null;
+    /** @var string */
     protected $startFromPath = '';
+    /** @var string */
     protected $dirDelimiter = IPaths::SPLITTER_SLASH;
 
-    public function __construct(IStorage $storage)
+    public function __construct(IStorage $storage, string $dirDelimiter = IPaths::SPLITTER_SLASH)
     {
         $this->storage = $storage;
-        $this->nodeAdapter = new Adapters\FilesNodeAdapter();
+        $this->dirDelimiter = $dirDelimiter;
+        $this->nodeAdapter = new Adapters\StorageNodeAdapter($storage, $dirDelimiter);
     }
 
     public function startFromPath(string $path): void
@@ -40,12 +44,15 @@ class Storage extends ADataStorage implements IDataSource
         $this->startFromPath = $path;
     }
 
+    /**
+     * @throws StorageException
+     */
     public function process(): void
     {
         $iter = $this->loadRecursive ? $this->getRecursive() : $this->getFlat() ;
-        $iter = new CallbackFilterIterator($iter, [$this, 'filterDoubleDot']);
+        $iter = array_filter(iterator_to_array($iter), [$this, 'filterDoubleDot']);
         if ($this->filterCallback) {
-            $iter = new CallbackFilterIterator($iter, $this->filterCallback);
+            $iter = array_filter($iter, $this->filterCallback);
         }
 
         $nodes = [];
@@ -58,8 +65,7 @@ class Storage extends ADataStorage implements IDataSource
             unset($nodes[$this->dirDelimiter]);
         }
         if (empty($nodes[''])) { // root dir has no upper path
-            $item = new SplFileInfo($this->rootDir . $this->startFromPath);
-            $rootNode = $this->nodeAdapter->process($item);
+            $rootNode = $this->nodeAdapter->process('');
             $nodes[''] = $rootNode; // root node
         }
         $this->nodes = $nodes;
@@ -71,17 +77,29 @@ class Storage extends ADataStorage implements IDataSource
         return (0 < count($path)) ? implode($this->dirDelimiter, array_slice($path, 0, -1)) : '' ;
     }
 
-    protected function getFlat(): \Traversable
+    /**
+     * @throws StorageException
+     * @return Traversable<string>
+     */
+    protected function getFlat(): Traversable
     {
         foreach ($this->storage->lookup($this->startFromPath) as $name) {
             if (!empty($this->startFromPath)) {
-                $name = str_replace($this->startFromPath, '', $name);
+                if (0 === mb_strpos($name, $this->startFromPath)) {
+                    $name = str_replace($this->startFromPath, '', $name);
+                    yield $name;
+                }
+            } else {
+                yield $name;
             }
-            yield $name;
         }
     }
 
-    protected function getRecursive(): \Traversable
+    /**
+     * @throws StorageException
+     * @return Traversable<string>
+     */
+    protected function getRecursive(): Traversable
     {
         foreach ($this->storage->lookup($this->startFromPath) as $name) {
             yield $name;

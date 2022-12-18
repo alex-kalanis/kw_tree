@@ -3,15 +3,21 @@
 namespace kalanis\kw_tree\Adapters;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
+use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
+use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\StorageException;
 use kalanis\kw_tree\Essentials\FileNode;
-use SplFileInfo;
+use kalanis\kw_tree\Interfaces\ITree;
 
 
 /**
  * Class StorageNodeAdapter
  * @package kalanis\kw_tree\Adapters
  * Create tree node from Storage record (I have little to no information about Node)
+ * @todo: komplet vyhodit? - ma problemy s rozlisenim souboru a slozek, protoze to zavisi na samotnem storagi
+ *        zaroven by zmizela jedna otravna zavislost
 
 Normal file
 path - the whole path against cutDir
@@ -24,41 +30,69 @@ path - empty
  */
 class StorageNodeAdapter
 {
+    /** @var IStorage */
+    protected $storage = null;
+    /** @var string */
+    protected $dirDelimiter = IPaths::SPLITTER_SLASH;
+    /** @var string */
     protected $cutDir = '';
 
+    public function __construct(IStorage $storage, string $dirDelimiter = IPaths::SPLITTER_SLASH)
+    {
+        $this->storage = $storage;
+        $this->dirDelimiter = $dirDelimiter;
+    }
+
+    /**
+     * @param string $dir
+     * @throws StorageException
+     * @return $this
+     */
     public function cutDir(string $dir): self
     {
-        $check = realpath($dir);
-        if (false !== $check) {
-            $this->cutDir = $check . DIRECTORY_SEPARATOR;
+        if ($this->storage->exists($dir)) {
+            $this->cutDir = $dir . $this->dirDelimiter;
         }
         return $this;
     }
 
-    public function process(SplFileInfo $info): FileNode
+    /**
+     * @param string $path
+     * @throws StorageException
+     * @return FileNode
+     */
+    public function process(string $path): FileNode
     {
-        $pathToCut = $this->shortRealPath($info);
-        $path = $this->cutPath($pathToCut);
-
-//print_r(['info' => $info, 'path' => $pathToCut, 'cut' => $path, 'dir' => $dir, 'name' => $name]);
+        $data = $this->storage->read($path);
+        if (is_resource($data)) {
+            // copy stream to temporary one
+            $resource = fopen('php://temp', 'rb+');
+            rewind($data);
+            $size = stream_copy_to_stream($data, $resource, -1, 0);
+            if (false === $size) {
+                // @codeCoverageIgnoreStart
+                throw new StorageException('Cannot get size from resource');
+            }
+            // @codeCoverageIgnoreEnd
+            if (200 > $size) {
+                rewind($resource);
+                $content = stream_get_contents($resource, -1, 0);
+            } else {
+                $content = 'just binary string';
+            }
+        } else {
+            $content = strval($data);
+            $size = strlen($content);
+        }
         $node = new FileNode();
         $node->setData(
-            array_filter(array_filter(Stuff::pathToArray($path), ['\kalanis\kw_paths\Stuff', 'notDots'])),
-            $info->getSize(),
-            $info->getType(),
-            $info->isReadable(),
-            $info->isWritable()
+            array_filter(array_filter(Stuff::pathToArray($this->cutPath($path)), ['\kalanis\kw_paths\Stuff', 'notDots'])),
+            $size,
+            $this->getType($path, $content),
+            true,
+            true
         );
         return $node;
-    }
-
-    protected function shortRealPath(SplFileInfo $info): string
-    {
-        $path = $info->getRealPath();
-        return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
-            ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
-            : $path
-        ;
     }
 
     protected function cutPath(string $path): string
@@ -67,5 +101,19 @@ class StorageNodeAdapter
             ? mb_substr($path, mb_strlen($this->cutDir))
             : $path
         ;
+    }
+
+    protected function getType(string $path, string $content): string
+    {
+        if ('' == $path) {
+            return ITypes::TYPE_DIR;
+        }
+        if ($this->dirDelimiter == mb_substr($path, -1, 1)) {
+            return ITypes::TYPE_DIR;
+        }
+        if (ITree::STORAGE_NODE_KEY == $content) {
+            return ITypes::TYPE_DIR;
+        }
+        return ITypes::TYPE_FILE;
     }
 }

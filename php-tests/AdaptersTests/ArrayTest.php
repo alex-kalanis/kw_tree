@@ -3,9 +3,9 @@
 namespace AdaptersTests;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_tree\Adapters\ArrayAdapter;
 use kalanis\kw_tree\Essentials\FileNode;
-use kalanis\kw_tree\Interfaces\ITree;
 
 
 class ArrayTest extends \CommonTestClass
@@ -38,7 +38,7 @@ class ArrayTest extends \CommonTestClass
     public function dataProvider(): array
     {
         return [
-            [['abc', 'def', 'ghi'], 123, ITree::TYPE_UNKNOWN, false, false],
+            [['abc', 'def', 'ghi'], 123, ITypes::TYPE_UNKNOWN, false, false],
         ];
     }
 }

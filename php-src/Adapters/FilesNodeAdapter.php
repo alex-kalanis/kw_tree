@@ -3,6 +3,8 @@
 namespace kalanis\kw_tree\Adapters;
 
 
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Node;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Essentials\FileNode;
@@ -24,26 +26,36 @@ path - empty
  */
 class FilesNodeAdapter
 {
-    protected $cutDir = '';
+    /** @var IProcessNodes */
+    protected $nodeProcessor = null;
+    /** @var string[] */
+    protected $cutDir = [];
 
+    public function __construct(IProcessNodes $nodeProcessor)
+    {
+        $this->nodeProcessor = $nodeProcessor;
+    }
+
+    /**
+     * @param string $dir
+     * @throws FilesException
+     * @return $this
+     */
     public function cutDir(string $dir): self
     {
-        $check = realpath($dir);
-        if (false !== $check) {
-            $this->cutDir = $check . DIRECTORY_SEPARATOR;
+        $path = Stuff::pathToArray($dir);
+        if ($this->nodeProcessor->exists($path) && $this->nodeProcessor->isDir($path)) {
+            $this->cutDir = $path;
         }
         return $this;
     }
 
     public function process(Node $info): FileNode
     {
-        $pathToCut = $this->shortRealPath($info);
-        $path = $this->cutPath($pathToCut);
-
 //print_r(['info' => $info, 'path' => $pathToCut, 'cut' => $path, 'dir' => $dir, 'name' => $name]);
         $node = new FileNode();
         $node->setData(
-            array_filter(array_filter(Stuff::pathToArray($path), ['\kalanis\kw_paths\Stuff', 'notDots'])),
+            $this->clearPath($info),
             $info->getSize(),
             $info->getType(),
             true,
@@ -54,18 +66,25 @@ class FilesNodeAdapter
 
     protected function shortRealPath(Node $info): string
     {
-        $path = $info->getRealPath();
+        $path = Stuff::arrayToPath($info->getPath());
         return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
             ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
             : $path
         ;
     }
 
-    protected function cutPath(string $path): string
+    /**
+     * @param Node $info
+     * @return string[]
+     */
+    protected function clearPath(Node $info): array
     {
-        return (0 === mb_strpos($path, $this->cutDir))
-            ? mb_substr($path, mb_strlen($this->cutDir))
-            : $path
-        ;
+        $withoutProblems = array_filter(array_filter($info->getPath(), ['\kalanis\kw_paths\Stuff', 'notDots']));
+        // if equals cut them out and return the rest from the name
+        $pathToCut = array_slice($withoutProblems, 0, count($this->cutDir));
+        if ($pathToCut == $this->cutDir) {
+            $withoutProblems = array_slice($withoutProblems, count($this->cutDir));
+        }
+        return $withoutProblems;
     }
 }

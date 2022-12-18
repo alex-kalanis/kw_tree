@@ -47,6 +47,9 @@ abstract class ADataStorage
      */
     abstract protected function getDirKey(array $path): string;
 
+    /**
+     * @return array<string, FileNode>
+     */
     public function getNodes(): array
     {
         return $this->nodes;
