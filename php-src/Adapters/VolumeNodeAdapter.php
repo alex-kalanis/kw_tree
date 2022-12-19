@@ -24,6 +24,7 @@ path - empty
  */
 class VolumeNodeAdapter
 {
+    /** @var string */
     protected $cutDir = '';
 
     public function cutDir(string $dir): self

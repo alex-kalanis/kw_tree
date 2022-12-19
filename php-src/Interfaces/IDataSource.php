@@ -17,7 +17,7 @@ interface IDataSource
     public function canRecursive(bool $recursive): void;
 
     /**
-     * @param callback|callable|null $callback
+     * @param callable|array<string>|string|null $callback
      */
     public function setFilterCallback($callback = null): void;
 

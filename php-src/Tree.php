@@ -12,6 +12,9 @@ use kalanis\kw_tree\Interfaces\IDataSource;
  * class Tree
  * @package kalanis\kw_tree
  * Main class for work with trees
+ *
+ * @todo: datasource array with defined parents
+ * @todo: datasource database
  */
 class Tree
 {
@@ -19,7 +22,7 @@ class Tree
     protected $dataSource = null;
     /** @var Essentials\FileNode|null */
     protected $loadedTree = null;
-    /** @var callback|callable|null */
+    /** @var callable|array<string>|string|null */
     protected $nodesCallback = null;
 
     public function __construct(IDataSource $dataSource)
@@ -39,7 +42,7 @@ class Tree
 
     /**
      * Filter over internal data source
-     * @param callback|callable|null $callback
+     * @param callable|array<string>|string|null $callback
      */
     public function setFilterCallback($callback = null): void
     {
@@ -48,7 +51,7 @@ class Tree
 
     /**
      * Filter over established nodes
-     * @param callback|callable|null $callback
+     * @param callable|array<string>|string|null $callback
      */
     public function setNodesCallback($callback = null): void
     {
@@ -73,7 +76,7 @@ class Tree
         }
 //print_r($tree);
 
-        // add subnodes
+        // add subnodes to their parents
         foreach ($nodes as &$node) {
             $parentDir = $this->parentDirPathToString($node);
             if ($tree[$parentDir] !== $node) { // beware of unintended recursion
@@ -81,7 +84,7 @@ class Tree
             }
         }
 
-        // set root node as result
+        // set root node as primary result
         $this->loadedTree = $tree[''];
 //print_r($this->loadedTree);
     }

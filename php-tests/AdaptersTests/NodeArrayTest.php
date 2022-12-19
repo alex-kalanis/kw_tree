@@ -4,11 +4,11 @@ namespace AdaptersTests;
 
 
 use kalanis\kw_files\Interfaces\ITypes;
-use kalanis\kw_tree\Adapters\ArrayAdapter;
+use kalanis\kw_tree\Adapters\NodeArrayAdapter;
 use kalanis\kw_tree\Essentials\FileNode;
 
 
-class ArrayTest extends \CommonTestClass
+class NodeArrayTest extends \CommonTestClass
 {
     /**
      * @param string[] $path
@@ -25,7 +25,7 @@ class ArrayTest extends \CommonTestClass
         $sub = new FileNode();
         $sub->setData(['ab', 'cd', 'ef'], 32, 'gh', false, false);
         $node->addSubNode($sub);
-        $lib = new ArrayAdapter();
+        $lib = new NodeArrayAdapter();
         $packed = $lib->pack($node);
         $copy = $lib->unpack($packed);
         $this->assertEquals($path, $copy->getPath());

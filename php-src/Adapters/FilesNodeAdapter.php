@@ -67,7 +67,7 @@ class FilesNodeAdapter
     protected function shortRealPath(Node $info): string
     {
         $path = Stuff::arrayToPath($info->getPath());
-        return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
+        return $info->isDir() && (false === mb_strpos($path, Stuff::arrayToPath($this->cutDir)))
             ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
             : $path
         ;

@@ -15,7 +15,7 @@ abstract class ADataStorage
 {
     /** @var bool */
     protected $loadRecursive = false;
-    /** @var callback|callable|null */
+    /** @var callable|array<string>|string|null */
     protected $filterCallback = null;
     /** @var array<string, FileNode> */
     protected $nodes = [];
@@ -26,7 +26,7 @@ abstract class ADataStorage
     }
 
     /**
-     * @param callback|callable|null $callback
+     * @param callable|array<string>|string|null $callback
      */
     public function setFilterCallback($callback = null): void
     {

@@ -7,12 +7,16 @@ use kalanis\kw_tree\Essentials\FileNode;
 
 
 /**
- * Class NodeAdapter
+ * Class NodeArrayAdapter
  * @package kalanis\kw_tree\Adapters
  * Create node from data array and reverse
  */
-class ArrayAdapter
+class NodeArrayAdapter
 {
+    /**
+     * @param FileNode $node
+     * @return array<string, string|int|array<string, string|int|mixed>>
+     */
     public function pack(FileNode $node): array
     {
         return [
@@ -25,6 +29,10 @@ class ArrayAdapter
         ];
     }
 
+    /**
+     * @param array<string, string|int|array<string, string|int|mixed>> $array
+     * @return FileNode
+     */
     public function unpack(array $array): FileNode
     {
         $node = new FileNode();
