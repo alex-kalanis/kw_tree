@@ -9,7 +9,6 @@ use kalanis\kw_files\Interfaces\IProcessNodes;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_paths\Interfaces\IPaths;
-use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Adapters;
 use kalanis\kw_tree\Interfaces\IDataSource;
 use kalanis\kw_tree\Interfaces\ITree;
@@ -41,9 +40,9 @@ class Files extends ADataStorage implements IDataSource
         $this->nodeAdapter = new Adapters\FilesNodeAdapter($nodeProcessor);
     }
 
-    public function startFromPath(string $path): void
+    public function startFromPath(array $path): void
     {
-        $this->startFromPath = array_filter(Stuff::pathToArray($path));
+        $this->startFromPath = array_filter($path);
     }
 
     /**

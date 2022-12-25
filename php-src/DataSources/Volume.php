@@ -6,6 +6,7 @@ namespace kalanis\kw_tree\DataSources;
 use CallbackFilterIterator;
 use FilesystemIterator;
 use Iterator;
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Path;
 use kalanis\kw_paths\Stuff;
@@ -37,14 +38,24 @@ class Volume extends ADataStorage implements IDataSource
         $this->nodeAdapter = new Adapters\VolumeNodeAdapter();
     }
 
-    public function startFromPath(string $path): void
+    /**
+     * @param string[] $path
+     * @throws FilesException
+     */
+    public function startFromPath(array $path): void
     {
-        if (false !== ($knownPath = realpath($this->rootDir . $path))) {
-            $this->startFromPath = $path;
-            $this->nodeAdapter->cutDir($knownPath . DIRECTORY_SEPARATOR);
+        if (false !== ($knownPath = realpath($this->rootDir . Stuff::arrayToPath($path)))) {
+            $this->startFromPath = Stuff::arrayToPath($path);
+            $this->nodeAdapter->cutDir(Stuff::pathToArray($knownPath));
+        } else {
+            $this->startFromPath = '';
+            $this->nodeAdapter->cutDir([]);
         }
     }
 
+    /**
+     * @throws FilesException
+     */
     public function process(): void
     {
         $iter = $this->loadRecursive ? $this->getRecursive() : $this->getFlat() ;
@@ -70,6 +81,11 @@ class Volume extends ADataStorage implements IDataSource
         $this->nodes = $nodes;
     }
 
+    /**
+     * @param string[] $path
+     * @throws FilesException
+     * @return string
+     */
     protected function getDirKey(array $path): string
     {
         return Stuff::arrayToLink($path);

@@ -10,7 +10,7 @@ use kalanis\kw_files\Interfaces\ITypes;
  * Class FileNode
  * @package kalanis\kw_tree\Essentials
  * File in directory (could be directory too)
- * Different, yet similar to SplFileInfo because it's possible to pack and unpack the whole thing without access to real volume
+ * Different, yet similar to SplFileInfo because it's possible to pack and unpack the whole thing without access to the real volume
  */
 class FileNode
 {

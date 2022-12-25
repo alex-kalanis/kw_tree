@@ -73,7 +73,7 @@ class TreeTest extends \CommonTestClass
         $paths = new Path();
         $paths->setDocumentRoot(__DIR__ . '/../data'); // system root - where are all files
         $lib = new Tree(new Volume($paths));
-        $lib->startFromPath('tree'); // user's current dir to scan
+        $lib->startFromPath(['tree']); // user's current dir to scan
         return $lib;
     }
 }

@@ -3,6 +3,7 @@
 namespace kalanis\kw_tree\Adapters;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Stuff;
 use kalanis\kw_tree\Essentials\FileNode;
 use SplFileInfo;
@@ -24,27 +25,37 @@ path - empty
  */
 class VolumeNodeAdapter
 {
-    /** @var string */
-    protected $cutDir = '';
+    /** @var string[] */
+    protected $cutDir = [];
 
-    public function cutDir(string $dir): self
+    /**
+     * @param string[] $dir
+     * @throws FilesException
+     * @return VolumeNodeAdapter
+     */
+    public function cutDir(array $dir): self
     {
-        $check = realpath($dir);
-        if (false !== $check) {
-            $this->cutDir = $check . DIRECTORY_SEPARATOR;
-        }
+        $check = realpath(Stuff::arrayToPath($dir));
+        $this->cutDir = (false !== $check) ? Stuff::pathToArray($check) : [];
         return $this;
     }
 
-    public function process(SplFileInfo $info): FileNode
+    /**
+     * @param SplFileInfo $info
+     * @throws FilesException
+     * @return FileNode|null
+     */
+    public function process(SplFileInfo $info): ?FileNode
     {
-        $pathToCut = $this->shortRealPath($info);
-        $path = $this->cutPath($pathToCut);
+        $path = $this->cutArrayPath(Stuff::pathToArray($info->getRealPath()));
+        if (is_null($path)) {
+            return null;
+        }
 
-//print_r(['info' => $info, 'path' => $pathToCut, 'cut' => $path, 'dir' => $dir, 'name' => $name]);
+//print_r(['info' => $info, 'path' => $path, ]);
         $node = new FileNode();
         $node->setData(
-            array_filter(array_filter(Stuff::pathToArray($path), ['\kalanis\kw_paths\Stuff', 'notDots'])),
+            $path,
             $info->getSize(),
             $info->getType(),
             $info->isReadable(),
@@ -53,20 +64,24 @@ class VolumeNodeAdapter
         return $node;
     }
 
-    protected function shortRealPath(SplFileInfo $info): string
+    /**
+     * @param string[] $path
+     * @return string[]|null
+     */
+    protected function cutArrayPath(array $path): ?array
     {
-        $path = $info->getRealPath();
-        return $info->isDir() && (false === mb_strpos($path, $this->cutDir))
-            ? Stuff::removeEndingSlash($path) . DIRECTORY_SEPARATOR
-            : $path
-        ;
-    }
+        if (empty($this->cutDir)) {
+            return $path;
+        }
+        foreach ($this->cutDir as $pos => $cut) {
+            if (!isset($path[$pos])) {
+                return null;
+            }
+            if ($path[$pos] != $cut) {
+                return null;
+            }
+        }
 
-    protected function cutPath(string $path): string
-    {
-        return (0 === mb_strpos($path, $this->cutDir))
-            ? mb_substr($path, mb_strlen($this->cutDir))
-            : $path
-        ;
+        return array_slice($path, count($this->cutDir));
     }
 }

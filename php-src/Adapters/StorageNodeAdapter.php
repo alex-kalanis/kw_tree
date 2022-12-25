@@ -3,6 +3,7 @@
 namespace kalanis\kw_tree\Adapters;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_paths\Stuff;
@@ -34,8 +35,8 @@ class StorageNodeAdapter
     protected $storage = null;
     /** @var string */
     protected $dirDelimiter = IPaths::SPLITTER_SLASH;
-    /** @var string */
-    protected $cutDir = '';
+    /** @var string[] */
+    protected $cutDir = [];
 
     public function __construct(IStorage $storage, string $dirDelimiter = IPaths::SPLITTER_SLASH)
     {
@@ -44,24 +45,24 @@ class StorageNodeAdapter
     }
 
     /**
-     * @param string $dir
+     * @param string[] $dir
      * @throws StorageException
      * @return $this
      */
-    public function cutDir(string $dir): self
+    public function cutDir(array $dir): self
     {
-        if ($this->storage->exists($dir)) {
-            $this->cutDir = $dir . $this->dirDelimiter;
-        }
+        $path = implode($this->dirDelimiter, $dir);
+        $this->cutDir = $this->storage->exists($path) ? $path + [''] : [];
         return $this;
     }
 
     /**
      * @param string $path
+     * @throws FilesException
      * @throws StorageException
-     * @return FileNode
+     * @return FileNode|null
      */
-    public function process(string $path): FileNode
+    public function process(string $path): ?FileNode
     {
         $data = $this->storage->read($path);
         if (is_resource($data)) {
@@ -84,9 +85,14 @@ class StorageNodeAdapter
             $content = strval($data);
             $size = strlen($content);
         }
+        $cut = $this->cutArrayPath($path);
+        if (is_null($cut)) {
+            return null;
+        }
+
         $node = new FileNode();
         $node->setData(
-            array_filter(array_filter(Stuff::pathToArray($this->cutPath($path)), ['\kalanis\kw_paths\Stuff', 'notDots'])),
+            $cut,
             $size,
             $this->getType($path, $content),
             true,
@@ -95,12 +101,28 @@ class StorageNodeAdapter
         return $node;
     }
 
-    protected function cutPath(string $path): string
+    /**
+     * @param string $path
+     * @throws FilesException
+     * @return string[]|null
+     */
+    protected function cutArrayPath(string $path): ?array
     {
-        return (0 === mb_strpos($path, $this->cutDir))
-            ? mb_substr($path, mb_strlen($this->cutDir))
-            : $path
-        ;
+        $arr = Stuff::pathToArray($path, $this->dirDelimiter);
+        if (empty($this->cutDir)) {
+            return $arr;
+        }
+
+        foreach ($this->cutDir as $pos => $cut) {
+            if (!isset($arr[$pos])) {
+                return null;
+            }
+            if ($arr[$pos] != $cut) {
+                return null;
+            }
+        }
+
+        return array_slice($arr, count($this->cutDir));
     }
 
     protected function getType(string $path, string $content): string

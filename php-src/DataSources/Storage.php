@@ -3,6 +3,7 @@
 namespace kalanis\kw_tree\DataSources;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_paths\Interfaces\IPaths;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\StorageException;
@@ -27,8 +28,8 @@ class Storage extends ADataStorage implements IDataSource
     protected $storage = null;
     /** @var Adapters\StorageNodeAdapter */
     protected $nodeAdapter = null;
-    /** @var string */
-    protected $startFromPath = '';
+    /** @var string[] */
+    protected $startFromPath = [];
     /** @var string */
     protected $dirDelimiter = IPaths::SPLITTER_SLASH;
 
@@ -39,12 +40,13 @@ class Storage extends ADataStorage implements IDataSource
         $this->nodeAdapter = new Adapters\StorageNodeAdapter($storage, $dirDelimiter);
     }
 
-    public function startFromPath(string $path): void
+    public function startFromPath(array $path): void
     {
         $this->startFromPath = $path;
     }
 
     /**
+     * @throws FilesException
      * @throws StorageException
      */
     public function process(): void
@@ -58,7 +60,9 @@ class Storage extends ADataStorage implements IDataSource
         $nodes = [];
         foreach ($iter as $item) {
             $eachNode = $this->nodeAdapter->process($item);
-            $nodes[$this->getKey($eachNode)] = $eachNode; // full path
+            if ($eachNode) {
+                $nodes[$this->getKey($eachNode)] = $eachNode; // full path
+            }
         }
         if (isset($nodes[$this->dirDelimiter])) {
             $nodes[''] = $nodes[$this->dirDelimiter];
@@ -66,6 +70,9 @@ class Storage extends ADataStorage implements IDataSource
         }
         if (empty($nodes[''])) { // root dir has no upper path
             $rootNode = $this->nodeAdapter->process('');
+            if (!$rootNode) {
+                throw new StorageException(sprintf('There is no root node for path *%s*', $this->startFromPath));
+            }
             $nodes[''] = $rootNode; // root node
         }
         $this->nodes = $nodes;

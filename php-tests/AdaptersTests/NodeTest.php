@@ -3,6 +3,7 @@
 namespace AdaptersTests;
 
 
+use kalanis\kw_files\FilesException;
 use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_tree\Adapters\VolumeNodeAdapter;
 
@@ -16,13 +17,14 @@ class NodeTest extends \CommonTestClass
      * @param string $type
      * @param bool $isFile
      * @param bool $isDir
+     * @throws FilesException
      * @dataProvider pathsProvider
      */
     public function testLinks(string $path, string $dir, string $name, string $type, bool $isFile, bool $isDir): void
     {
         $src = new \SplFileInfo($path);
         $lib = new VolumeNodeAdapter();
-        $lib->cutDir($this->getSysDir());
+        $lib->cutDir($this->getSysArray());
         $node = $lib->process($src);
         if (
             (DIRECTORY_SEPARATOR != $name) // you cannot compare root directory path without realpath()
@@ -51,5 +53,13 @@ class NodeTest extends \CommonTestClass
     protected function getSysDir(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'tree' . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getSysArray(): array
+    {
+        return [__DIR__, '..', 'data', 'tree'];
     }
 }

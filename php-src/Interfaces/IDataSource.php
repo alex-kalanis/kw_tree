@@ -12,7 +12,10 @@ use kalanis\kw_tree\Essentials\FileNode;
  */
 interface IDataSource
 {
-    public function startFromPath(string $path): void;
+    /**
+     * @param string[] $path
+     */
+    public function startFromPath(array $path): void;
 
     public function canRecursive(bool $recursive): void;
 

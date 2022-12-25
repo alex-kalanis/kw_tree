@@ -7,11 +7,11 @@ use kalanis\kw_tree\Essentials\FileNode;
 
 
 /**
- * Class NodeArrayAdapter
+ * Class TreeFileNodeAdapter
  * @package kalanis\kw_tree\Adapters
- * Create node from data array and reverse
+ * Create our node from File Node and reverse
  */
-class NodeArrayAdapter
+class TreeFileNodeAdapter
 {
     /**
      * @param FileNode $node

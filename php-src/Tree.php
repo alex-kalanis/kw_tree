@@ -35,7 +35,10 @@ class Tree
         $this->dataSource->canRecursive($recursive);
     }
 
-    public function startFromPath(string $path): void
+    /**
+     * @param string[] $path
+     */
+    public function startFromPath(array $path): void
     {
         $this->dataSource->startFromPath($path);
     }
