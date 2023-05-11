@@ -6,103 +6,165 @@ namespace kalanis\kw_tree\DataSources;
 use CallbackFilterIterator;
 use FilesystemIterator;
 use Iterator;
-use kalanis\kw_files\FilesException;
-use kalanis\kw_paths\Interfaces\IPaths;
-use kalanis\kw_paths\Path;
-use kalanis\kw_paths\Stuff;
-use kalanis\kw_tree\Adapters;
-use kalanis\kw_tree\Interfaces\IDataSource;
+use kalanis\kw_files\Interfaces\ITypes;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
-use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SplFileInfo;
 
 
-/**
- * Class Volume
- * @package kalanis\kw_tree\DataSources
- * Read data directly from Volume
- */
-class Volume extends ADataStorage implements IDataSource
+class Volume extends ASources
 {
-    /** @var Adapters\VolumeNodeAdapter */
-    protected $nodeAdapter = null;
     /** @var string */
-    protected $rootDir = '';
-    /** @var string */
-    protected $startFromPath = '';
+    protected $systemDir = '';
+    /** @var ArrayPath */
+    protected $libPath = null;
 
-    public function __construct(Path $path)
+    public function __construct(string $systemDir)
     {
-        $this->rootDir = realpath($path->getDocumentRoot() . $path->getPathToSystemRoot()) . DIRECTORY_SEPARATOR;
-        $this->nodeAdapter = new Adapters\VolumeNodeAdapter();
+        $this->systemDir = $systemDir;
+        $this->libPath = new ArrayPath();
     }
 
     /**
-     * @param string[] $path
-     * @throws FilesException
+     * @throws PathsException
+     * @return $this
      */
-    public function startFromPath(array $path): void
+    public function process(): ITree
     {
-        if (false !== ($knownPath = realpath($this->rootDir . Stuff::arrayToPath($path)))) {
-            $this->startFromPath = Stuff::arrayToPath($path);
-            $this->nodeAdapter->cutDir(Stuff::pathToArray($knownPath));
-        } else {
-            $this->startFromPath = '';
-            $this->nodeAdapter->cutDir([]);
+        $path = realpath($this->systemDir . DIRECTORY_SEPARATOR . $this->libPath->setArray($this->startPath)->getString());
+        if (false === $path) {
+            return $this;
         }
-    }
 
-    /**
-     * @throws FilesException
-     */
-    public function process(): void
-    {
-        $iter = $this->loadRecursive ? $this->getRecursive() : $this->getFlat() ;
+        $iter = $this->recursive ? $this->getRecursive($path) : $this->getFlat($path) ;
         $iter = new CallbackFilterIterator($iter, [$this, 'filterDoubleDot']);
         if ($this->filterCallback) {
             $iter = new CallbackFilterIterator($iter, $this->filterCallback);
         }
 
+        /** @var FileNode[] $nodes */
         $nodes = [];
+        $initNode = new SplFileInfo($path);
+        $nodes[''] = $this->fillNode($initNode, '');
+
         foreach ($iter as $item) {
-            $eachNode = $this->nodeAdapter->process($item);
-            $nodes[$this->getKey($eachNode)] = $eachNode; // full path
+            /** @var SplFileInfo $item */
+            $cutPath = $this->cutPathStart($path, $item->getRealPath());
+            if (!is_null($cutPath)) {
+                $nodes[$cutPath] = $this->fillNode($item, $cutPath);
+            }
         }
-        if (isset($nodes[IPaths::SPLITTER_SLASH])) {
-            $nodes[''] = $nodes[IPaths::SPLITTER_SLASH];
-            unset($nodes[IPaths::SPLITTER_SLASH]);
+
+        if (ITree::ORDER_NONE != $this->ordering) {
+            uasort(
+                $nodes,
+                (ITree::ORDER_ASC == $this->ordering ? [$this, 'orderUp'] : [$this, 'orderDown'])
+            );
         }
-        if (empty($nodes[''])) { // root dir has no upper path
-            $item = new SplFileInfo($this->rootDir . $this->startFromPath);
-            $rootNode = $this->nodeAdapter->process($item);
-            $nodes[''] = $rootNode; // root node
+
+        foreach ($nodes as $node) {
+            $parentPath = $this->libPath->setArray($node->getPath())->getStringDirectory();
+            if (!empty($node->getPath()) && isset($nodes[$parentPath])) {
+                $nodes[$parentPath]->addSubNode($node);
+            }
         }
-        $this->nodes = $nodes;
+
+        $this->startNode = $nodes[''];
+        return $this;
     }
 
-    /**
-     * @param string[] $path
-     * @throws FilesException
-     * @return string
-     */
-    protected function getDirKey(array $path): string
+    protected function getFlat(string $path): Iterator
     {
-        return Stuff::arrayToLink($path);
+        return new FilesystemIterator($path);
     }
 
-    protected function getFlat(): Iterator
+    protected function getRecursive(string $path): Iterator
     {
-        return new FilesystemIterator($this->rootDir . $this->startFromPath);
-    }
-
-    protected function getRecursive(): Iterator
-    {
-        return new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->rootDir . $this->startFromPath));
+        return new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
     }
 
     public function filterDoubleDot(SplFileInfo $info): bool
     {
         return ( ITree::PARENT_DIR != $info->getFilename() ) ;
+    }
+
+    /**
+     * @param FileNode $file1
+     * @param FileNode $file2
+     * @throws PathsException
+     * @return int
+     */
+    public function orderUp(FileNode $file1, FileNode $file2): int
+    {
+        return strcasecmp(
+            $this->libPath->setArray($file1->getPath())->getString(),
+            $this->libPath->setArray($file2->getPath())->getString()
+        );
+    }
+
+    /**
+     * @param FileNode $file1
+     * @param FileNode $file2
+     * @throws PathsException
+     * @return int
+     */
+    public function orderDown(FileNode $file1, FileNode $file2): int
+    {
+        return strcasecmp(
+            $this->libPath->setArray($file2->getPath())->getString(),
+            $this->libPath->setArray($file1->getPath())->getString()
+        );
+    }
+
+    /**
+     * @param SplFileInfo $file
+     * @param string $path
+     * @throws PathsException
+     * @return FileNode
+     */
+    protected function fillNode(SplFileInfo $file, string $path): FileNode
+    {
+        $node = new FileNode();
+        return $node->setData(
+            $this->libPath->setString($path)->getArray(),
+            $file->getSize(),
+            $this->toType($file),
+            $file->isReadable(),
+            $file->isWritable()
+        );
+    }
+
+    protected function cutPathStart(string $start, string $what): ?string
+    {
+        $isKnown = mb_strpos($what, $start);
+        if (0 === $isKnown) {
+            return mb_substr($what, mb_strlen($start));
+        } else {
+            // @codeCoverageIgnoreStart
+            // false for unknown or higher number for elsewhere
+            // this node will be kicked out of results later
+            return null;
+        }
+        // @codeCoverageIgnoreEnd
+    }
+
+    protected function toType(SplFileInfo $file): string
+    {
+        switch ($file->getType()) {
+            case 'dir':
+                return ITypes::TYPE_DIR;
+            case 'file':
+                return ITypes::TYPE_FILE;
+            // @codeCoverageIgnoreStart
+            case 'link':
+                return ITypes::TYPE_LINK;
+            default:
+                return ITypes::TYPE_UNKNOWN;
+            // @codeCoverageIgnoreEnd
+        }
     }
 }

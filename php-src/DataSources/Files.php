@@ -3,83 +3,118 @@
 namespace kalanis\kw_tree\DataSources;
 
 
+use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
-use kalanis\kw_files\Interfaces\IProcessDirs;
-use kalanis\kw_files\Interfaces\IProcessNodes;
-use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
-use kalanis\kw_paths\Interfaces\IPaths;
-use kalanis\kw_tree\Adapters;
-use kalanis\kw_tree\Interfaces\IDataSource;
+use kalanis\kw_paths\ArrayPath;
+use kalanis\kw_paths\PathsException;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 
 
-/**
- * Class Files
- * @package kalanis\kw_tree\DataSources
- * Tree source is in remote Storage defined in Files
- *
- * separator is (usually) DIRECTORY_SEPARATOR
- * - when recursive got everything
- * - when solo filter only to records which has no separator after start path
- */
-class Files extends ADataStorage implements IDataSource
+class Files extends ASources
 {
-    /** @var IProcessDirs */
-    protected $dirTree = null;
-    /** @var Adapters\FilesNodeAdapter */
-    protected $nodeAdapter = null;
-    /** @var string[] */
-    protected $startFromPath = [];
-    /** @var string */
-    protected $dirDelimiter = IPaths::SPLITTER_SLASH;
+    /** @var CompositeAdapter */
+    protected $files = null;
+    /** @var ArrayPath */
+    protected $libPath = null;
 
-    public function __construct(IProcessDirs $dirTree, IProcessNodes $nodeProcessor)
+    public function __construct(CompositeAdapter $files)
     {
-        $this->dirTree = $dirTree;
-        $this->nodeAdapter = new Adapters\FilesNodeAdapter($nodeProcessor);
-    }
-
-    public function startFromPath(array $path): void
-    {
-        $this->startFromPath = array_filter($path);
+        $this->files = $files;
+        $this->libPath = new ArrayPath();
     }
 
     /**
      * @throws FilesException
+     * @throws PathsException
+     * @return $this
      */
-    public function process(): void
+    public function process(): ITree
     {
-        $iter = $this->dirTree->readDir($this->startFromPath, $this->loadRecursive);
+        if (!$this->files->exists($this->startPath)) {
+            return $this;
+        }
+
+        $entries = $this->files->readDir($this->startPath, $this->recursive);
+
         if ($this->filterCallback) {
-            $iter = array_filter($iter, $this->filterCallback);
+            $entries = array_filter($entries, $this->filterCallback);
         }
 
+        /** @var FileNode[] $nodes */
         $nodes = [];
-        foreach ($iter as $item) {
-            $eachNode = $this->nodeAdapter->process($item);
-            $nodes[$this->getKey($eachNode)] = $eachNode; // full path
+
+        // loaded into nodes
+        foreach ($entries as $entry) {
+            /** @var Node $entry */
+            $key = $this->libPath->setArray($entry->getPath())->getString();
+            $nodes[$key] = $this->fillNode($entry);
         }
-        if (isset($nodes[$this->dirDelimiter])) {
-            $nodes[''] = $nodes[$this->dirDelimiter];
-            unset($nodes[$this->dirDelimiter]);
+
+        // sort obtained
+        if (ITree::ORDER_NONE != $this->ordering) {
+            uasort(
+                $nodes,
+                (ITree::ORDER_ASC == $this->ordering ? [$this, 'orderUp'] : [$this, 'orderDown'])
+            );
         }
-        if (empty($nodes[''])) { // root dir has no upper path
-            $item = new Node();
-            $item->setData($this->startFromPath, 0, ITypes::TYPE_DIR);
-            $rootNode = $this->nodeAdapter->process($item);
-            $nodes[''] = $rootNode; // root node
+
+        // now create tree
+        foreach ($nodes as $node) {
+            $parentPath = $this->libPath->setArray($node->getPath())->getStringDirectory();
+            if (!empty($node->getPath()) && isset($nodes[$parentPath])) {
+                $nodes[$parentPath]->addSubNode($node);
+            }
         }
-        $this->nodes = $nodes;
+
+        $this->startNode = $nodes[''];
+        return $this;
     }
 
-    protected function getDirKey(array $path): string
+    /**
+     * @param FileNode $file1
+     * @param FileNode $file2
+     * @throws PathsException
+     * @return int
+     */
+    public function orderUp(FileNode $file1, FileNode $file2): int
     {
-        return (0 < count($path)) ? implode($this->dirDelimiter, array_slice($path, 0, -1)) : '' ;
+        return strcasecmp(
+            $this->libPath->setArray($file1->getPath())->getString(),
+            $this->libPath->setArray($file2->getPath())->getString()
+        );
     }
 
-    public function filterDoubleDot(string $name): bool
+    /**
+     * @param FileNode $file1
+     * @param FileNode $file2
+     * @throws PathsException
+     * @return int
+     */
+    public function orderDown(FileNode $file1, FileNode $file2): int
     {
-        return ( ITree::PARENT_DIR != $name ) ;
+        return strcasecmp(
+            $this->libPath->setArray($file2->getPath())->getString(),
+            $this->libPath->setArray($file1->getPath())->getString()
+        );
+    }
+
+    /**
+     * @param Node $file
+     * @throws FilesException
+     * @throws PathsException
+     * @return FileNode
+     */
+    protected function fillNode(Node $file): FileNode
+    {
+        $node = new FileNode();
+        return $node->setData(
+            $this->libPath->setArray($file->getPath())->getArray(),
+            $file->getSize(),
+            $file->getType(),
+            $this->files->isReadable($file->getPath()),
+            $this->files->isWritable($file->getPath())
+        );
     }
 }
