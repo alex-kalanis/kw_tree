@@ -1,5 +1,13 @@
 # kw_tree
 
+[![Build Status](https://app.travis-ci.com/alex-kalanis/kw_tree.svg?branch=master)](https://app.travis-ci.com/github/alex-kalanis/kw_tree)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alex-kalanis/kw_tree/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alex-kalanis/kw_tree/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/alex-kalanis/kw_tree/v/stable.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_tree)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![Downloads](https://img.shields.io/packagist/dt/alex-kalanis/kw_tree.svg?v1)](https://packagist.org/packages/alex-kalanis/kw_tree)
+[![License](https://poser.pugx.org/alex-kalanis/kw_tree/license.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_tree)
+[![Code Coverage](https://scrutinizer-ci.com/g/alex-kalanis/kw_tree/badges/coverage.png?b=master&v=1)](https://scrutinizer-ci.com/g/alex-kalanis/kw_tree/?branch=master)
+
 Tree of files and directories. Access them from the specified path.
 
 ## PHP Installation
@@ -7,7 +15,7 @@ Tree of files and directories. Access them from the specified path.
 ```
 {
     "require": {
-        "alex-kalanis/kw_tree": "1.0"
+        "alex-kalanis/kw_tree": "2.0"
     }
 }
 ```
@@ -20,11 +28,9 @@ familiar with composer)
 
 1.) Use your autoloader (if not already done via Composer autoloader)
 
-2.) Add some external packages with connection to the local or remote services.
+2.) Add some external packages with connection to the local or remote storage.
 
 3.) Connect the "kalanis\kw_tree\Tree" into your app. Extends it for setting your case.
-
-4.) Connect the "kalanis\kw_tree\TWhereDir" into your app.
 
 4.) Extend your libraries by interfaces inside the package.
 
