@@ -3,7 +3,6 @@
 namespace SourcesTests;
 
 
-use kalanis\kw_files\Node;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\DataSources\Volume;
@@ -12,8 +11,6 @@ use kalanis\kw_tree\DataSources\Volume;
 /**
  * Class VolumeTest
  * @package SourcesTests
- * @todo: dodat porovnani fillu vracenych entries
- *    - zbytek se celkem obstojne rozjel
  */
 class VolumeTest extends \CommonTestClass
 {

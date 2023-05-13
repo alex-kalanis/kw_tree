@@ -19,8 +19,6 @@ use kalanis\kw_tree\DataSources\Files;
 /**
  * Class FilesTest
  * @package SourcesTests
- * @todo: dodat porovnani fillu vracenych entries
- *    - zbytek se celkem obstojne rozjel
  */
 class FilesTest extends \CommonTestClass
 {
