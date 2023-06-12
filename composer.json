@@ -9,7 +9,7 @@
     "type": "library",
     "require": {
         "alex-kalanis/kw_paths": ">=3.0",
-        "alex-kalanis/kw_files": ">=3.2",
+        "alex-kalanis/kw_files": ">=3.3",
         "ext-mbstring": "*",
         "php": ">=7.2.0"
     },

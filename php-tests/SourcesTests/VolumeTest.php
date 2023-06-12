@@ -3,7 +3,9 @@
 namespace SourcesTests;
 
 
+use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_paths\PathsException;
+use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 use kalanis\kw_tree\DataSources\Volume;
 
@@ -24,6 +26,8 @@ class VolumeTest extends \CommonTestClass
             ->process()
             ->getRoot();
         $this->assertNotEmpty($results);
+        $sub = $results->getSubNodes();
+        $this->assertNotEmpty($sub);
     }
 
     /**
@@ -39,11 +43,60 @@ class VolumeTest extends \CommonTestClass
             ->process()
             ->getRoot();
         $this->assertNotEmpty($results);
+        $sub = $results->getSubNodes();
+        $this->assertNotEmpty($sub);
+
+        $node = reset($sub);
+        /** @var FileNode $node */
+        $this->assertEquals(['sub'], $node->getPath());
+        $this->assertEquals(ITypes::TYPE_DIR, $node->getType());
+        $this->assertTrue($node->isReadable());
+        $this->assertTrue($node->isWritable());
+        $this->assertEmpty($node->getSubNodes());
+
+        $node = next($sub);
+        $this->assertEquals(['next_one'], $node->getPath());
+        $this->assertNotEmpty($node->getSubNodes());
+
+        $subs = $node->getSubNodes();
+        $node = reset($subs);
+        $this->assertEquals(['next_one', 'sub_one'], $node->getPath());
+        $this->assertEmpty($node->getSubNodes());
+
+        $this->assertFalse(next($subs));
+
+        $node = next($sub);
+        $this->assertEquals(['last_one'], $node->getPath());
+        $this->assertEmpty($node->getSubNodes());
+
+        $this->assertFalse(next($sub));
+    }
+
+    /**
+     * @throws PathsException
+     */
+    public function testFilesLevel(): void
+    {
+        $results = $this
+            ->getLib()
+            ->wantDeep(false)
+            ->setFilterCallback([$this, 'justFilesCallback'])
+            ->setOrdering(ITree::ORDER_ASC)
+            ->process()
+            ->getRoot();
+        $this->assertNotEmpty($results);
+        $sub = $results->getSubNodes();
+        $this->assertNotEmpty($sub);
     }
 
     public function justDirsCallback(\SplFileInfo $node): bool
     {
         return $node->isDir();
+    }
+
+    public function justFilesCallback(\SplFileInfo $node): bool
+    {
+        return $node->isFile();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace kalanis\kw_tree\DataSources;
 
 use kalanis\kw_files\Access\CompositeAdapter;
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_paths\ArrayPath;
 use kalanis\kw_paths\PathsException;
@@ -44,6 +45,10 @@ class Files extends ASources
 
         /** @var FileNode[] $nodes */
         $nodes = [];
+        // sometimes the root node is filtered out - put it there for each situation
+        $initNode = new Node();
+        $initNode->setData([], 0, ITypes::TYPE_FILE);
+        $nodes[''] = $this->fillNode($initNode);
 
         // loaded into nodes
         foreach ($entries as $entry) {
