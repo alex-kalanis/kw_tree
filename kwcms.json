@@ -5,7 +5,6 @@
   "source": "https://github.com/alex-kalanis/kw_tree",
   "license": "BSD-3-Clause",
   "require": {
-    "alex-kalanis/kw_input": "dev-master",
     "alex-kalanis/kw_files": "dev-master",
     "alex-kalanis/kw_paths": "dev-master",
     "php": ">=7.2.0"
@@ -13,6 +12,7 @@
   "suggest": {
   },
   "require-dev": {
+    "alex-kalanis/kw_storage": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true
