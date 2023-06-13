@@ -11,6 +11,7 @@ use kalanis\kw_files\Interfaces\ITypes;
  * @package kalanis\kw_tree\Essentials
  * File in directory (could be directory too)
  * Different, yet similar to SplFileInfo because it's possible to pack and unpack the whole thing without access to the real volume
+ * Also represents more than one data source
  */
 class FileNode
 {

@@ -7,15 +7,15 @@ use kalanis\kw_files\Node;
 
 
 /**
- * Trait TFilesDirs
+ * Trait TFilesFile
  * @package kalanis\kw_tree\Traits
  * Prepared callbacks for usage with data sources
- * Return only nodes identified as dirs
+ * Return only nodes identified as files
  */
-trait TFilesDirs
+trait TFilesFile
 {
-    public function justDirsCallback(Node $node): bool
+    public function justFilesCallback(Node $node): bool
     {
-        return $node->isDir();
+        return $node->isFile();
     }
 }

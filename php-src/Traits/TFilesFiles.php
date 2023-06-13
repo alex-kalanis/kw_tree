@@ -12,6 +12,7 @@ use kalanis\kw_paths\Stuff;
  * Trait TFilesFiles
  * @package kalanis\kw_tree\Traits
  * Prepared callbacks for usage with data sources
+ * Return nodes identified as dirs or files with predefined ext; use with deep tree lookup
  */
 trait TFilesFiles
 {

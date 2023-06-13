@@ -13,6 +13,11 @@ use kalanis\kw_tree\Essentials\FileNode;
 use kalanis\kw_tree\Interfaces\ITree;
 
 
+/**
+ * Class Files
+ * @package kalanis\kw_tree\DataSources
+ * The source is in libraries kw_files and their composite adapter
+ */
 class Files extends ASources
 {
     /** @var CompositeAdapter */
@@ -47,7 +52,7 @@ class Files extends ASources
         $nodes = [];
         // sometimes the root node is filtered out - put it there for each situation
         $initNode = new Node();
-        $initNode->setData([], 0, ITypes::TYPE_FILE);
+        $initNode->setData([], 0, ITypes::TYPE_DIR);
         $nodes[''] = $this->fillNode($initNode);
 
         // loaded into nodes

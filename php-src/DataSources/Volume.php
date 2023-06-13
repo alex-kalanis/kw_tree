@@ -16,6 +16,11 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 
+/**
+ * Class Volume
+ * @package kalanis\kw_tree\DataSources
+ * The source is local volume
+ */
 class Volume extends ASources
 {
     /** @var string */

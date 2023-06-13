@@ -96,8 +96,20 @@ class FilesTest extends \CommonTestClass
             ->process()
             ->getRoot();
         $this->assertNotEmpty($results);
+        $this->assertEquals([], $results->getPath());
+        $this->assertEquals(ITypes::TYPE_DIR, $results->getType());
+        $this->assertNotEmpty($results->getSubNodes());
+
+        /** @var FileNode $results */
         $sub = $results->getSubNodes();
-        $this->assertNotEmpty($sub);
+
+        $node = reset($sub);
+        /** @var FileNode $node */
+        $this->assertEquals(['dummy1.txt'], $node->getPath());
+        $this->assertEquals(ITypes::TYPE_FILE, $node->getType());
+        $this->assertTrue($node->isReadable());
+        $this->assertTrue($node->isWritable());
+        $this->assertEmpty($node->getSubNodes());
     }
 
     public function justDirsCallback(Node $node): bool
