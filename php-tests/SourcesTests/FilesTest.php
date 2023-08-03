@@ -10,7 +10,7 @@ use kalanis\kw_files\Interfaces\ITypes;
 use kalanis\kw_files\Node;
 use kalanis\kw_paths\PathsException;
 use kalanis\kw_storage\Interfaces\ITarget;
-use kalanis\kw_storage\Storage\Key\DirKey;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 use kalanis\kw_storage\Storage\Storage;
 use kalanis\kw_storage\Storage\Target\Memory;
 use kalanis\kw_tree\Essentials\FileNode;
@@ -160,8 +160,8 @@ class FilesTest extends \CommonTestClass
     protected function getLib(): Files
     {
         $compFact = new Factory();
-        DirKey::setDir(DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'tree');
-        $storage = new Storage(new DirKey(), $this->filledMemory());
+        StaticPrefixKey::setPrefix(DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'tree');
+        $storage = new Storage(new StaticPrefixKey(), $this->filledMemory());
         return new Files($compFact->getClass($storage));
     }
 
