@@ -23,10 +23,8 @@ use SplFileInfo;
  */
 class Volume extends ASources
 {
-    /** @var string */
-    protected $systemDir = '';
-    /** @var ArrayPath */
-    protected $libPath = null;
+    protected string $systemDir = '';
+    protected ArrayPath $libPath;
 
     public function __construct(string $systemDir)
     {

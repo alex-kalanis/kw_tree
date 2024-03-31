@@ -20,10 +20,8 @@ use kalanis\kw_tree\Interfaces\ITree;
  */
 class Files extends ASources
 {
-    /** @var CompositeAdapter */
-    protected $files = null;
-    /** @var ArrayPath */
-    protected $libPath = null;
+    protected CompositeAdapter $files;
+    protected ArrayPath $libPath;
 
     public function __construct(CompositeAdapter $files)
     {

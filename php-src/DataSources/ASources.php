@@ -10,15 +10,12 @@ use kalanis\kw_tree\Interfaces\ITree;
 abstract class ASources implements ITree
 {
     /** @var string[] */
-    protected $startPath = [];
-    /** @var string */
-    protected $ordering = ITree::ORDER_NONE;
+    protected array $startPath = [];
+    protected string $ordering = ITree::ORDER_NONE;
     /** @var callable|null */
     protected $filterCallback = null;
-    /** @var bool */
-    protected $recursive = false;
-    /** @var FileNode|null */
-    protected $startNode = null;
+    protected bool $recursive = false;
+    protected ?FileNode $startNode = null;
 
     public function setStartPath(array $path): ITree
     {

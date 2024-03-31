@@ -16,17 +16,13 @@ use kalanis\kw_files\Interfaces\ITypes;
 class FileNode
 {
     /** @var string[] */
-    protected $path = [];
-    /** @var string */
-    protected $type = ITypes::TYPE_UNKNOWN;
-    /** @var int */
-    protected $size = 0;
-    /** @var bool */
-    protected $readable = false;
-    /** @var bool */
-    protected $writable = false;
+    protected array $path = [];
+    protected string $type = ITypes::TYPE_UNKNOWN;
+    protected int $size = 0;
+    protected bool $readable = false;
+    protected bool $writable = false;
     /** @var FileNode[] */
-    protected $subNodes = [];
+    protected array $subNodes = [];
 
     /**
      * @param string[] $path

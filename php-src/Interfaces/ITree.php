@@ -13,12 +13,12 @@ use kalanis\kw_tree\Essentials\FileNode;
  */
 interface ITree
 {
-    const CURRENT_DIR = '.';
-    const PARENT_DIR = '..';
+    public const CURRENT_DIR = '.';
+    public const PARENT_DIR = '..';
 
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
-    const ORDER_NONE = 'NONE';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
+    public const ORDER_NONE = 'NONE';
 
     /**
      * Where to start in part known to data source
